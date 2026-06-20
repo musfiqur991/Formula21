@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formula21 – Real‑time Productivity Suite</title>
+    <title>Formula21 – Real‑time Productivity</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,15 +31,12 @@
     </script>
 
     <style>
-        /* ============================================================
-                   GLOBAL RESET — Warm Orange / Gold Theme
-                   ============================================================ */
+        /* ===== Same CSS as before — keep it unchanged ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         :root {
             --bg-primary: #0c0a0a;
             --bg-secondary: #161111;
@@ -62,11 +59,9 @@
             --radius-sm: 14px;
             --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         html {
             scroll-behavior: smooth;
         }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
@@ -79,7 +74,6 @@
                 radial-gradient(ellipse at 50% 80%, rgba(251, 146, 60, 0.04) 0%, transparent 50%);
             background-attachment: fixed;
         }
-
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -113,8 +107,8 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
-            padding: 48px 40px;
-            max-width: 440px;
+            padding: 40px 36px;
+            max-width: 420px;
             width: 90%;
             text-align: center;
             box-shadow: var(--shadow);
@@ -126,57 +120,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
-        #authOverlay .auth-box p {
+        #authOverlay .auth-box .sub {
             color: var(--text-secondary);
             margin-bottom: 24px;
-            font-size: 15px;
-        }
-        #authOverlay .auth-box .google-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 14px;
-            background: #fff;
-            color: #222;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-        #authOverlay .auth-box .google-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 24px rgba(255, 255, 255, 0.1);
-        }
-        #authOverlay .auth-box .google-btn img {
-            width: 24px;
-            height: 24px;
-        }
-        #authOverlay .auth-box .nickname-section {
-            margin-top: 20px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-        #authOverlay .auth-box .nickname-section label {
-            display: block;
-            text-align: left;
-            color: var(--text-secondary);
             font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 6px;
         }
-        #authOverlay .auth-box .nickname-section .input-group {
+        #authOverlay .auth-box .input-group {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
         }
-        #authOverlay .auth-box .nickname-section .input-group input {
-            flex: 1;
+        #authOverlay .auth-box .input-group input {
             padding: 12px 16px;
             background: rgba(12, 10, 10, 0.6);
             border: 1px solid var(--border-color);
@@ -185,12 +142,74 @@
             font-size: 15px;
             outline: none;
             font-family: 'Inter', sans-serif;
+            width: 100%;
         }
-        #authOverlay .auth-box .nickname-section .input-group input:focus {
+        #authOverlay .auth-box .input-group input:focus {
             border-color: var(--accent-1);
         }
+        #authOverlay .auth-box .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 8px;
+        }
+        #authOverlay .auth-box .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+        #authOverlay .auth-box .btn-outline {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        #authOverlay .auth-box .btn-outline:hover {
+            background: var(--bg-card);
+        }
+        #authOverlay .auth-box .auth-error {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 8px;
+            min-height: 24px;
+        }
+        #authOverlay .auth-box .toggle-link {
+            color: var(--accent-2);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        #authOverlay .auth-box .toggle-link:hover {
+            color: var(--accent-1);
+        }
+        #authOverlay .auth-box .nickname-section {
+            margin-top: 16px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+        #authOverlay .auth-box .nickname-section .input-group {
+            flex-direction: row;
+            gap: 8px;
+        }
+        #authOverlay .auth-box .nickname-section .input-group input {
+            flex: 1;
+        }
         #authOverlay .auth-box .nickname-section .input-group button {
-            padding: 12px 24px;
+            padding: 12px 20px;
             background: var(--accent-gradient);
             border: none;
             border-radius: var(--radius-sm);
@@ -200,6 +219,7 @@
             cursor: pointer;
             transition: var(--transition);
             font-family: 'Inter', sans-serif;
+            white-space: nowrap;
         }
         #authOverlay .auth-box .nickname-section .input-group button:hover {
             transform: scale(1.04);
@@ -269,7 +289,6 @@
             z-index: 100;
             transition: transform 0.35s ease;
         }
-
         .sidebar-brand {
             padding: 0 24px 28px 24px;
             border-bottom: 1px solid var(--border-color);
@@ -330,7 +349,6 @@
                 opacity: 0.3;
             }
         }
-
         .sidebar-nav {
             list-style: none;
             padding: 0 14px;
@@ -1064,10 +1082,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .report-grid .report-item .value.text-white {
-            -webkit-text-fill-color: var(--text-primary);
-            color: var(--text-primary);
-        }
         .report-table-wrap {
             overflow-x: auto;
             margin-top: 12px;
@@ -1429,30 +1443,35 @@
 <body>
 
     <!-- ============================================================
-    AUTH OVERLAY
+    AUTH OVERLAY (Email/Password + Nickname)
     ============================================================ -->
     <div id="authOverlay">
         <div class="auth-box">
             <h2>✦ Formula21</h2>
-            <p>Sign in to track your progress<br />and collaborate with your team.</p>
+            <div class="sub">Sign in to track your progress</div>
 
-            <!-- Google Sign-In Button -->
-            <button class="google-btn" id="googleSignInBtn">
-                <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                Sign in with Google
-            </button>
-
-            <!-- Nickname Section (shown after sign-in) -->
-            <div id="nicknameSection" class="nickname-section hidden">
-                <label>Choose your display name</label>
+            <!-- Login / Signup Form -->
+            <div id="authForm">
                 <div class="input-group">
-                    <input type="text" id="nicknameInput" placeholder="Enter a nickname..." maxlength="20" />
+                    <input type="email" id="loginEmail" placeholder="Email address" />
+                    <input type="password" id="loginPassword" placeholder="Password" />
+                </div>
+                <button class="btn-primary" id="loginBtn">Sign In</button>
+                <button class="btn-outline" id="signupBtn">Create Account</button>
+                <div class="auth-error" id="authError"></div>
+            </div>
+
+            <!-- Nickname Setup (shown after sign-in) -->
+            <div id="nicknameSection" class="nickname-section hidden">
+                <label style="display:block;text-align:left;color:var(--text-secondary);font-size:14px;font-weight:500;margin-bottom:6px;">Choose your display name</label>
+                <div class="input-group">
+                    <input type="text" id="nicknameInput" placeholder="Nickname..." maxlength="20" />
                     <button id="saveNicknameBtn">Save</button>
                 </div>
                 <div id="nicknameStatus" class="text-muted text-sm mt-8"></div>
             </div>
 
-            <!-- User Info (shown when signed in) -->
+            <!-- User Info (shown when signed in with nickname) -->
             <div id="userInfoSection" class="hidden">
                 <div class="user-info">
                     <div class="avatar" id="userAvatar">?</div>
@@ -1474,11 +1493,9 @@
 
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <div class="logo">
-                <span>✦</span> Formula21
-            </div>
+            <div class="logo"><span>✦</span> Formula21</div>
             <div class="tagline">Real‑time · Team · Growth</div>
-            <div class="user-badge" id="sidebarUserBadge">
+            <div class="user-badge">
                 <span class="dot"></span>
                 <span id="sidebarNickname">Guest</span>
             </div>
@@ -1505,7 +1522,6 @@
     ============================================================ -->
     <main class="main-content" id="mainContent">
 
-        <!-- HEADER -->
         <header class="header">
             <div class="header-left">
                 <h1 id="pageTitle">📊 Dashboard</h1>
@@ -1513,15 +1529,11 @@
             </div>
             <div class="header-right">
                 <span class="date-badge" id="dateDisplay"></span>
-                <span class="streak-badge" id="streakDisplay">
-                    🔥 <span id="streakNumber">0</span> days
-                </span>
+                <span class="streak-badge">🔥 <span id="streakNumber">0</span> days</span>
             </div>
         </header>
 
-        <!-- ============================================================
-        PAGE: DASHBOARD
-        ============================================================ -->
+        <!-- ===== PAGE: DASHBOARD ===== -->
         <section class="page active" id="page-dashboard">
             <div class="grid-4" id="dashStats">
                 <div class="stat-card"><div class="number" id="statTasks">0/0</div><div class="label">✅ Today's Tasks</div></div>
@@ -1535,27 +1547,18 @@
                     <div class="card-title"><span class="icon">🎯</span> Today's Progress <span class="chip" id="dashPctLabel">0%</span></div>
                     <div class="progress-ring-wrap">
                         <div class="progress-ring">
-                            <svg viewBox="0 0 120 120">
-                                <defs><linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
-                                <circle class="bg-circle" cx="60" cy="60" r="50"/>
-                                <circle class="fg-circle" id="ringTasks" cx="60" cy="60" r="50" stroke="url(#ringGrad1)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
-                            </svg>
+                            <svg viewBox="0 0 120 120"><defs><linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                                <circle class="bg-circle" cx="60" cy="60" r="50"/><circle class="fg-circle" id="ringTasks" cx="60" cy="60" r="50" stroke="url(#ringGrad1)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
                             <div class="center-text"><span class="value" id="ringTasksVal">0%</span><span class="label">Tasks</span></div>
                         </div>
                         <div class="progress-ring">
-                            <svg viewBox="0 0 120 120">
-                                <defs><linearGradient id="ringGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
-                                <circle class="bg-circle" cx="60" cy="60" r="50"/>
-                                <circle class="fg-circle" id="ringHabits" cx="60" cy="60" r="50" stroke="url(#ringGrad2)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
-                            </svg>
+                            <svg viewBox="0 0 120 120"><defs><linearGradient id="ringGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                                <circle class="bg-circle" cx="60" cy="60" r="50"/><circle class="fg-circle" id="ringHabits" cx="60" cy="60" r="50" stroke="url(#ringGrad2)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
                             <div class="center-text"><span class="value" id="ringHabitsVal">0%</span><span class="label">Habits</span></div>
                         </div>
                         <div class="progress-ring">
-                            <svg viewBox="0 0 120 120">
-                                <defs><linearGradient id="ringGrad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="50%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
-                                <circle class="bg-circle" cx="60" cy="60" r="50"/>
-                                <circle class="fg-circle" id="ringOverall" cx="60" cy="60" r="50" stroke="url(#ringGrad3)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
-                            </svg>
+                            <svg viewBox="0 0 120 120"><defs><linearGradient id="ringGrad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="50%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                                <circle class="bg-circle" cx="60" cy="60" r="50"/><circle class="fg-circle" id="ringOverall" cx="60" cy="60" r="50" stroke="url(#ringGrad3)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
                             <div class="center-text"><span class="value" id="ringOverallVal">0%</span><span class="label">Overall</span></div>
                         </div>
                     </div>
@@ -1569,191 +1572,89 @@
 
             <div class="card mt-16">
                 <div class="card-title"><span class="icon">📋</span> Today's Tasks <span class="chip" id="dashTaskChip">0 pending</span></div>
-                <div id="dashTaskList" class="item-list">
-                    <div class="text-muted" style="padding:16px;">No tasks for today</div>
-                </div>
+                <div id="dashTaskList" class="item-list"><div class="text-muted" style="padding:16px;">No tasks for today</div></div>
             </div>
         </section>
 
-        <!-- ============================================================
-        PAGE: TASKS
-        ============================================================ -->
+        <!-- ===== PAGE: TASKS ===== -->
         <section class="page" id="page-tasks">
-            <div class="card">
-                <div class="card-title"><span class="icon">➕</span> Add New Task</div>
-                <div class="input-group">
-                    <input type="text" id="taskInput" placeholder="e.g. Finish math homework" />
-                    <button id="addTaskBtn">Add Task</button>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">➕</span> Add New Task</div>
+                <div class="input-group"><input type="text" id="taskInput" placeholder="e.g. Finish math homework" /><button id="addTaskBtn">Add Task</button></div>
             </div>
-
-            <div class="card">
-                <div class="flex-between">
-                    <div class="card-title" style="margin-bottom:0;"><span class="icon">📋</span> Today's Tasks</div>
-                    <span id="taskCount" class="text-muted">0 items</span>
-                </div>
-                <div id="taskList" class="item-list mt-16">
-                    <div class="text-muted" style="padding:16px;">No tasks yet</div>
-                </div>
+            <div class="card"><div class="flex-between"><div class="card-title" style="margin-bottom:0;"><span class="icon">📋</span> Today's Tasks</div><span id="taskCount" class="text-muted">0 items</span></div>
+                <div id="taskList" class="item-list mt-16"><div class="text-muted" style="padding:16px;">No tasks yet</div></div>
             </div>
         </section>
 
-        <!-- ============================================================
-        PAGE: HABITS
-        ============================================================ -->
+        <!-- ===== PAGE: HABITS ===== -->
         <section class="page" id="page-habits">
-            <div class="card">
-                <div class="card-title"><span class="icon">➕</span> Add New Habit</div>
-                <div class="input-group">
-                    <input type="text" id="habitInput" placeholder="e.g. Morning meditation" />
-                    <button id="addHabitBtn">Add Habit</button>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">➕</span> Add New Habit</div>
+                <div class="input-group"><input type="text" id="habitInput" placeholder="e.g. Morning meditation" /><button id="addHabitBtn">Add Habit</button></div>
             </div>
-
-            <div class="card">
-                <div class="flex-between">
-                    <div class="card-title" style="margin-bottom:0;"><span class="icon">🔄</span> My Habits</div>
-                    <span id="habitCount" class="text-muted">0 items</span>
-                </div>
-                <div id="habitList" class="item-list mt-16">
-                    <div class="text-muted" style="padding:16px;">No habits yet</div>
-                </div>
+            <div class="card"><div class="flex-between"><div class="card-title" style="margin-bottom:0;"><span class="icon">🔄</span> My Habits</div><span id="habitCount" class="text-muted">0 items</span></div>
+                <div id="habitList" class="item-list mt-16"><div class="text-muted" style="padding:16px;">No habits yet</div></div>
             </div>
         </section>
 
-        <!-- ============================================================
-        PAGE: STUDY
-        ============================================================ -->
+        <!-- ===== PAGE: STUDY ===== -->
         <section class="page" id="page-study">
-            <div class="card">
-                <div class="card-title"><span class="icon">📚</span> Log Study Session</div>
-                <div class="input-group">
-                    <input type="number" id="studyHours" placeholder="Hours (e.g. 2.5)" step="0.5" />
-                    <input type="text" id="studySubject" placeholder="Subject (e.g. Math)" />
-                    <button id="addStudyBtn">Log</button>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">📚</span> Log Study Session</div>
+                <div class="input-group"><input type="number" id="studyHours" placeholder="Hours (e.g. 2.5)" step="0.5" /><input type="text" id="studySubject" placeholder="Subject" /><button id="addStudyBtn">Log</button></div>
             </div>
-
             <div class="grid-2 mt-16">
-                <div class="card">
-                    <div class="card-title"><span class="icon">📊</span> Today's Study</div>
-                    <div id="studyTodayDisplay" class="text-center" style="font-size:34px;font-weight:900;padding:16px;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0.0 hrs</div>
-                </div>
-                <div class="card">
-                    <div class="card-title"><span class="icon">📈</span> Weekly Study</div>
-                    <div class="chart-container"><canvas id="studyChart"></canvas></div>
-                </div>
+                <div class="card"><div class="card-title"><span class="icon">📊</span> Today's Study</div><div id="studyTodayDisplay" class="text-center" style="font-size:34px;font-weight:900;padding:16px;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0.0 hrs</div></div>
+                <div class="card"><div class="card-title"><span class="icon">📈</span> Weekly Study</div><div class="chart-container"><canvas id="studyChart"></canvas></div></div>
             </div>
-
-            <div class="card mt-16">
-                <div class="card-title"><span class="icon">📋</span> Study History</div>
-                <div id="studyHistory" class="item-list">
-                    <div class="text-muted" style="padding:16px;">No logs yet</div>
-                </div>
-            </div>
+            <div class="card mt-16"><div class="card-title"><span class="icon">📋</span> Study History</div><div id="studyHistory" class="item-list"><div class="text-muted" style="padding:16px;">No logs yet</div></div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: CHALLENGE
-        ============================================================ -->
+        <!-- ===== PAGE: CHALLENGE ===== -->
         <section class="page" id="page-challenge">
-            <div class="card">
-                <div class="card-title"><span class="icon">🏆</span> Start a 21‑Day Challenge</div>
-                <div class="input-group">
-                    <input type="text" id="challengeInput" placeholder="e.g. Wake up at 5 AM" />
-                    <button id="addChallengeBtn">Start Challenge</button>
-                </div>
-                <div class="text-muted text-sm mt-8">💡 Everyone in the team can join and track progress together.</div>
+            <div class="card"><div class="card-title"><span class="icon">🏆</span> Start a 21‑Day Challenge</div>
+                <div class="input-group"><input type="text" id="challengeInput" placeholder="e.g. Wake up at 5 AM" /><button id="addChallengeBtn">Start Challenge</button></div>
+                <div class="text-muted text-sm mt-8">💡 Everyone can join and track progress together.</div>
             </div>
-
-            <div id="challengeList" class="mt-16">
-                <div class="text-muted" style="padding:24px;text-align:center;">No challenges yet</div>
-            </div>
+            <div id="challengeList" class="mt-16"><div class="text-muted" style="padding:24px;text-align:center;">No challenges yet</div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: TEAM
-        ============================================================ -->
+        <!-- ===== PAGE: TEAM ===== -->
         <section class="page" id="page-team">
-            <div class="card">
-                <div class="card-title"><span class="icon">👥</span> Add Team Member</div>
-                <div class="input-group">
-                    <input type="text" id="teamInput" placeholder="Friend's name" />
-                    <button id="addTeamBtn">Add</button>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">👥</span> Add Team Member</div>
+                <div class="input-group"><input type="text" id="teamInput" placeholder="Friend's name" /><button id="addTeamBtn">Add</button></div>
                 <div class="text-muted mt-8" style="font-size:14px;">💡 Up to 5 members — collaborate in real‑time</div>
             </div>
-
-            <div class="card mt-16">
-                <div class="card-title"><span class="icon">👤</span> Team Roster</div>
-                <div id="teamList" class="item-list">
-                    <div class="text-muted" style="padding:16px;">No members yet</div>
-                </div>
-            </div>
-
-            <div class="card mt-16">
-                <div class="card-title"><span class="icon">📊</span> Team Progress</div>
-                <div id="teamProgressDisplay" class="text-center text-muted" style="padding:28px;">Add members to see progress</div>
-            </div>
+            <div class="card mt-16"><div class="card-title"><span class="icon">👤</span> Team Roster</div><div id="teamList" class="item-list"><div class="text-muted" style="padding:16px;">No members yet</div></div></div>
+            <div class="card mt-16"><div class="card-title"><span class="icon">📊</span> Team Progress</div><div id="teamProgressDisplay" class="text-center text-muted" style="padding:28px;">Add members to see progress</div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: ANALYTICS
-        ============================================================ -->
+        <!-- ===== PAGE: ANALYTICS ===== -->
         <section class="page" id="page-analytics">
             <div class="grid-2">
-                <div class="card">
-                    <div class="card-title"><span class="icon">📊</span> Weekly Tasks</div>
-                    <div class="chart-container"><canvas id="analyticsTasksChart"></canvas></div>
-                </div>
-                <div class="card">
-                    <div class="card-title"><span class="icon">🔄</span> Weekly Habits</div>
-                    <div class="chart-container"><canvas id="analyticsHabitsChart"></canvas></div>
-                </div>
+                <div class="card"><div class="card-title"><span class="icon">📊</span> Weekly Tasks</div><div class="chart-container"><canvas id="analyticsTasksChart"></canvas></div></div>
+                <div class="card"><div class="card-title"><span class="icon">🔄</span> Weekly Habits</div><div class="chart-container"><canvas id="analyticsHabitsChart"></canvas></div></div>
             </div>
             <div class="grid-2 mt-16">
-                <div class="card">
-                    <div class="card-title"><span class="icon">📚</span> Monthly Study</div>
-                    <div class="chart-container"><canvas id="analyticsStudyChart"></canvas></div>
-                </div>
-                <div class="card">
-                    <div class="card-title"><span class="icon">😊</span> Mood Distribution</div>
-                    <div class="chart-container"><canvas id="analyticsMoodChart"></canvas></div>
-                </div>
+                <div class="card"><div class="card-title"><span class="icon">📚</span> Monthly Study</div><div class="chart-container"><canvas id="analyticsStudyChart"></canvas></div></div>
+                <div class="card"><div class="card-title"><span class="icon">😊</span> Mood Distribution</div><div class="chart-container"><canvas id="analyticsMoodChart"></canvas></div></div>
             </div>
         </section>
 
-        <!-- ============================================================
-        PAGE: LEADERBOARD
-        ============================================================ -->
+        <!-- ===== PAGE: LEADERBOARD ===== -->
         <section class="page" id="page-leaderboard">
-            <div class="card">
-                <div class="card-title"><span class="icon">🥇</span> Live Leaderboard <span class="chip">Real‑time</span></div>
-                <div id="leaderboardList" class="item-list">
-                    <div class="text-muted" style="padding:16px;">No data yet</div>
-                </div>
-            </div>
+            <div class="card"><div class="card-title"><span class="icon">🥇</span> Live Leaderboard <span class="chip">Real‑time</span></div><div id="leaderboardList" class="item-list"><div class="text-muted" style="padding:16px;">No data yet</div></div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: AI COACH
-        ============================================================ -->
+        <!-- ===== PAGE: AI COACH ===== -->
         <section class="page" id="page-coach">
-            <div class="card">
-                <div class="card-title"><span class="icon">🤖</span> AI Productivity Coach</div>
-                <div id="coachOutput" style="background:rgba(12,10,10,0.5);backdrop-filter:blur(4px);border-radius:var(--radius-sm);padding:24px;border:1px solid var(--border-color);min-height:120px;line-height:1.9;">
-                    <span class="text-muted">Analyzing your progress…</span>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">🤖</span> AI Productivity Coach</div>
+                <div id="coachOutput" style="background:rgba(12,10,10,0.5);backdrop-filter:blur(4px);border-radius:var(--radius-sm);padding:24px;border:1px solid var(--border-color);min-height:120px;line-height:1.9;"><span class="text-muted">Analyzing your progress…</span></div>
                 <button id="coachRefreshBtn" class="mt-16" style="padding:12px 32px;background:var(--accent-gradient);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition);box-shadow:0 4px 20px rgba(249,115,22,0.25);">🔄 Get New Insights</button>
             </div>
         </section>
 
-        <!-- ============================================================
-        PAGE: MOOD
-        ============================================================ -->
+        <!-- ===== PAGE: MOOD ===== -->
         <section class="page" id="page-mood">
-            <div class="card">
-                <div class="card-title"><span class="icon">😊</span> How are you feeling today?</div>
+            <div class="card"><div class="card-title"><span class="icon">😊</span> How are you feeling today?</div>
                 <div class="mood-options" id="moodOptions">
                     <button data-mood="😄">😄 Excellent</button>
                     <button data-mood="🙂">🙂 Good</button>
@@ -1763,54 +1664,27 @@
                 </div>
                 <div id="moodTodayDisplay" class="mt-16 text-muted">Today's mood: not selected</div>
             </div>
-
-            <div class="card mt-16">
-                <div class="card-title"><span class="icon">📊</span> Mood History</div>
-                <div id="moodHistory" class="item-list">
-                    <div class="text-muted" style="padding:16px;">No data yet</div>
-                </div>
-            </div>
+            <div class="card mt-16"><div class="card-title"><span class="icon">📊</span> Mood History</div><div id="moodHistory" class="item-list"><div class="text-muted" style="padding:16px;">No data yet</div></div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: FOCUS
-        ============================================================ -->
+        <!-- ===== PAGE: FOCUS ===== -->
         <section class="page" id="page-focus">
-            <div class="card text-center">
-                <div class="card-title" style="justify-content:center;"><span class="icon">🎯</span> Pomodoro Timer</div>
+            <div class="card text-center"><div class="card-title" style="justify-content:center;"><span class="icon">🎯</span> Pomodoro Timer</div>
                 <div class="timer-display" id="timerDisplay">25:00</div>
-                <div class="timer-controls">
-                    <button class="primary" id="timerStartBtn">▶ Start</button>
-                    <button id="timerPauseBtn">⏸ Pause</button>
-                    <button id="timerResetBtn">⟳ Reset</button>
-                </div>
+                <div class="timer-controls"><button class="primary" id="timerStartBtn">▶ Start</button><button id="timerPauseBtn">⏸ Pause</button><button id="timerResetBtn">⟳ Reset</button></div>
                 <div class="mt-16 text-muted" style="font-size:14px;">⏱ 25 min work · 5 min break</div>
                 <div class="mt-16"><span id="focusSessionCount" class="text-muted">Today: 0 sessions</span></div>
             </div>
-
-            <div class="card mt-16">
-                <div class="card-title"><span class="icon">📋</span> Focus Session History</div>
-                <div id="focusHistory" class="item-list">
-                    <div class="text-muted" style="padding:16px;">No sessions yet</div>
-                </div>
-            </div>
+            <div class="card mt-16"><div class="card-title"><span class="icon">📋</span> Focus Session History</div><div id="focusHistory" class="item-list"><div class="text-muted" style="padding:16px;">No sessions yet</div></div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: ACHIEVEMENTS
-        ============================================================ -->
+        <!-- ===== PAGE: ACHIEVEMENTS ===== -->
         <section class="page" id="page-achievements">
-            <div class="card">
-                <div class="card-title"><span class="icon">🎖️</span> Your Achievements <span class="chip" id="achieveCount">0 unlocked</span></div>
-                <div class="achievement-grid" id="achievementGrid"></div>
-            </div>
+            <div class="card"><div class="card-title"><span class="icon">🎖️</span> Your Achievements <span class="chip" id="achieveCount">0 unlocked</span></div><div class="achievement-grid" id="achievementGrid"></div></div>
         </section>
 
-        <!-- ============================================================
-        PAGE: REPORTS — Enhanced & Well-Structured
-        ============================================================ -->
+        <!-- ===== PAGE: REPORTS ===== -->
         <section class="page" id="page-reports">
-            <!-- Summary Cards -->
             <div class="grid-4" id="reportSummaryCards">
                 <div class="stat-card"><div class="number" id="repTotalTasks">0</div><div class="label">📋 Total Tasks</div></div>
                 <div class="stat-card"><div class="number" id="repTotalHabits">0</div><div class="label">🔄 Total Habits</div></div>
@@ -1818,9 +1692,7 @@
                 <div class="stat-card"><div class="number" id="repStreak">0</div><div class="label">🔥 Streak</div></div>
             </div>
 
-            <!-- Detailed Report -->
-            <div class="card">
-                <div class="card-title"><span class="icon">📊</span> Full Report <span class="chip">All data</span></div>
+            <div class="card"><div class="card-title"><span class="icon">📊</span> Full Report <span class="chip">All data</span></div>
                 <div class="report-grid">
                     <div class="report-item"><div class="label">Total Tasks</div><div class="value" id="repTasksTotal">0</div></div>
                     <div class="report-item"><div class="label">Completed Tasks</div><div class="value" id="repTasksDone">0</div></div>
@@ -1835,62 +1707,24 @@
                 </div>
             </div>
 
-            <!-- Task History Table -->
-            <div class="card">
-                <div class="card-title"><span class="icon">📋</span> Task History <span class="chip">Recent</span></div>
-                <div class="report-table-wrap">
-                    <table class="report-table" id="reportTaskTable">
-                        <thead><tr><th>Task</th><th>Status</th><th>Date</th><th>User</th></tr></thead>
-                        <tbody id="reportTaskBody">
-                            <tr><td colspan="4" class="text-muted text-center">No tasks yet</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">📋</span> Task History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap"><table class="report-table" id="reportTaskTable"><thead><tr><th>Task</th><th>Status</th><th>Date</th><th>User</th></tr></thead><tbody id="reportTaskBody"><tr><td colspan="4" class="text-muted text-center">No tasks yet</td></tr></tbody></table></div>
             </div>
 
-            <!-- Habit History Table -->
-            <div class="card">
-                <div class="card-title"><span class="icon">🔄</span> Habit History <span class="chip">Recent</span></div>
-                <div class="report-table-wrap">
-                    <table class="report-table" id="reportHabitTable">
-                        <thead><tr><th>Habit</th><th>Status</th><th>Date</th><th>User</th></tr></thead>
-                        <tbody id="reportHabitBody">
-                            <tr><td colspan="4" class="text-muted text-center">No habits yet</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">🔄</span> Habit History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap"><table class="report-table" id="reportHabitTable"><thead><tr><th>Habit</th><th>Status</th><th>Date</th><th>User</th></tr></thead><tbody id="reportHabitBody"><tr><td colspan="4" class="text-muted text-center">No habits yet</td></tr></tbody></table></div>
             </div>
 
-            <!-- Study History Table -->
-            <div class="card">
-                <div class="card-title"><span class="icon">📚</span> Study History <span class="chip">Recent</span></div>
-                <div class="report-table-wrap">
-                    <table class="report-table" id="reportStudyTable">
-                        <thead><tr><th>Subject</th><th>Hours</th><th>Date</th><th>User</th></tr></thead>
-                        <tbody id="reportStudyBody">
-                            <tr><td colspan="4" class="text-muted text-center">No study logs yet</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">📚</span> Study History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap"><table class="report-table" id="reportStudyTable"><thead><tr><th>Subject</th><th>Hours</th><th>Date</th><th>User</th></tr></thead><tbody id="reportStudyBody"><tr><td colspan="4" class="text-muted text-center">No study logs yet</td></tr></tbody></table></div>
             </div>
 
-            <!-- Mood History Table -->
-            <div class="card">
-                <div class="card-title"><span class="icon">😊</span> Mood History <span class="chip">Recent</span></div>
-                <div class="report-table-wrap">
-                    <table class="report-table" id="reportMoodTable">
-                        <thead><tr><th>Mood</th><th>Date</th><th>User</th></tr></thead>
-                        <tbody id="reportMoodBody">
-                            <tr><td colspan="3" class="text-muted text-center">No mood logs yet</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card"><div class="card-title"><span class="icon">😊</span> Mood History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap"><table class="report-table" id="reportMoodTable"><thead><tr><th>Mood</th><th>Date</th><th>User</th></tr></thead><tbody id="reportMoodBody"><tr><td colspan="3" class="text-muted text-center">No mood logs yet</td></tr></tbody></table></div>
             </div>
 
-            <!-- Download & Reset -->
             <div class="grid-2 mt-16">
-                <div class="card">
-                    <div class="card-title"><span class="icon">📄</span> Download Reports</div>
+                <div class="card"><div class="card-title"><span class="icon">📄</span> Download Reports</div>
                     <p class="text-muted mb-16">Export your data in multiple formats</p>
                     <div class="report-buttons">
                         <button class="pdf" id="reportPDF">📕 PDF</button>
@@ -1902,7 +1736,7 @@
 
                 <div class="card" style="border-color:rgba(239,68,68,0.2);">
                     <div class="card-title"><span class="icon">⚠️</span> Reset All Data</div>
-                    <p class="text-muted mb-16">This will permanently delete <strong>all</strong> tasks, habits, study logs, challenges, moods, focus sessions, and achievements.</p>
+                    <p class="text-muted mb-16">This will permanently delete <strong>all</strong> data.</p>
                     <button id="resetAllBtn" style="padding:12px 32px;background:var(--danger);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition);box-shadow:0 4px 20px rgba(239,68,68,0.25);font-family:'Inter',sans-serif;">🗑️ Reset Everything</button>
                     <div class="text-muted text-sm mt-8">Requires password: <span class="font-mono" style="color:var(--accent-2);">ls1825235</span></div>
                 </div>
@@ -1911,19 +1745,13 @@
 
     </main>
 
-    <!-- ============================================================
-    MOBILE TOGGLE
-    ============================================================ -->
+    <!-- ===== MOBILE TOGGLE ===== -->
     <button class="menu-toggle" id="menuToggle">☰</button>
 
-    <!-- ============================================================
-    TOAST
-    ============================================================ -->
+    <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ============================================================
-    RESET MODAL
-    ============================================================ -->
+    <!-- ===== RESET MODAL ===== -->
     <div class="modal-overlay" id="resetModal">
         <div class="modal-box">
             <h3>⚠️ Reset All Data</h3>
@@ -1940,14 +1768,14 @@
     </div>
 
     <!-- ============================================================
-    JAVASCRIPT — FULL APPLICATION
+    JAVASCRIPT
     ============================================================ -->
     <script>
         (function() {
             'use strict';
 
             // ============================================================
-            // FIREBASE CONFIG
+            // FIREBASE CONFIG (your config)
             // ============================================================
             const firebaseConfig = {
                 apiKey: "AIzaSyDd0pVplYKRTtsd0wt21Y83_gajtonBLXE",
@@ -1963,6 +1791,31 @@
             const auth = firebase.auth();
             const db = firebase.database();
             const dataRef = db.ref('formula21');
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+
+            // Auth elements
+            const authOverlay = $('#authOverlay');
+            const loginEmail = $('#loginEmail');
+            const loginPassword = $('#loginPassword');
+            const loginBtn = $('#loginBtn');
+            const signupBtn = $('#signupBtn');
+            const authError = $('#authError');
+            const nicknameSection = $('#nicknameSection');
+            const nicknameInput = $('#nicknameInput');
+            const saveNicknameBtn = $('#saveNicknameBtn');
+            const nicknameStatus = $('#nicknameStatus');
+            const userInfoSection = $('#userInfoSection');
+            const userAvatar = $('#userAvatar');
+            const userDisplayName = $('#userDisplayName');
+            const userEmail = $('#userEmail');
+            const userNicknameDisplay = $('#userNicknameDisplay');
+            const logoutBtn = $('#logoutBtn');
+            const sidebarNickname = $('#sidebarNickname');
 
             // ============================================================
             // STATE
@@ -1999,9 +1852,6 @@
             // ============================================================
             // HELPERS
             // ============================================================
-            const $ = (s) => document.querySelector(s);
-            const $$ = (s) document.querySelectorAll(s);
-
             function getToday() {
                 return new Date().toISOString().split('T')[0];
             }
@@ -2020,70 +1870,25 @@
             }
 
             // ============================================================
-            // AUTH
+            // AUTH FUNCTIONS
             // ============================================================
-            const authOverlay = $('#authOverlay');
-            const googleBtn = $('#googleSignInBtn');
-            const nicknameSection = $('#nicknameSection');
-            const nicknameInput = $('#nicknameInput');
-            const saveNicknameBtn = $('#saveNicknameBtn');
-            const nicknameStatus = $('#nicknameStatus');
-            const userInfoSection = $('#userInfoSection');
-            const userAvatar = $('#userAvatar');
-            const userDisplayName = $('#userDisplayName');
-            const userEmail = $('#userEmail');
-            const userNicknameDisplay = $('#userNicknameDisplay');
-            const logoutBtn = $('#logoutBtn');
-            const sidebarNickname = $('#sidebarNickname');
-
-            // Check auth state
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = user;
-                    // Check if user has a nickname
-                    const userRef = db.ref('formula21/users/' + user.uid);
-                    userRef.once('value').then((snap) => {
-                        const data = snap.val();
-                        if (data && data.nickname) {
-                            currentNickname = data.nickname;
-                            showUserInfo(user, currentNickname);
-                            hideAuthOverlay();
-                            loadDataFromFirebase();
-                        } else {
-                            // Need nickname
-                            showUserInfo(user, '');
-                            showNicknameSetup();
-                        }
-                    });
-                } else {
-                    currentUser = null;
-                    currentNickname = '';
-                    showAuthOverlay();
-                    // Hide app content
-                    document.querySelector('.main-content').style.opacity = '0.3';
-                    document.querySelector('.sidebar').style.opacity = '0.3';
-                }
-            });
-
-            function showAuthOverlay() {
-                authOverlay.classList.remove('hidden');
-                nicknameSection.classList.add('hidden');
-                userInfoSection.classList.add('hidden');
-                document.querySelector('.main-content').style.opacity = '0.3';
-                document.querySelector('.sidebar').style.opacity = '0.3';
-            }
-
             function hideAuthOverlay() {
                 authOverlay.classList.add('hidden');
                 document.querySelector('.main-content').style.opacity = '1';
                 document.querySelector('.sidebar').style.opacity = '1';
             }
 
+            function showAuthOverlay() {
+                authOverlay.classList.remove('hidden');
+                document.querySelector('.main-content').style.opacity = '0.3';
+                document.querySelector('.sidebar').style.opacity = '0.3';
+            }
+
             function showUserInfo(user, nickname) {
                 userInfoSection.classList.remove('hidden');
                 nicknameSection.classList.add('hidden');
-                userAvatar.textContent = (nickname || user.displayName || 'U')[0].toUpperCase();
-                userDisplayName.textContent = nickname || user.displayName || 'User';
+                userAvatar.textContent = (nickname || user.email || 'U')[0].toUpperCase();
+                userDisplayName.textContent = nickname || user.email || 'User';
                 userEmail.textContent = user.email || '';
                 if (nickname) {
                     userNicknameDisplay.textContent = '👤 ' + nickname;
@@ -2102,27 +1907,40 @@
                 nicknameInput.focus();
             }
 
-            // Google Sign-In
-            googleBtn.addEventListener('click', () => {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider).catch((err) => {
-                    showToast('Sign-in error: ' + err.message, 'error');
-                });
+            // ============================================================
+            // AUTH EVENTS
+            // ============================================================
+            loginBtn.addEventListener('click', function() {
+                const email = loginEmail.value.trim();
+                const pass = loginPassword.value;
+                if (!email || !pass) { authError.textContent = 'Please fill in all fields'; return; }
+                auth.signInWithEmailAndPassword(email, pass)
+                    .catch(err => { authError.textContent = err.message; });
             });
 
+            signupBtn.addEventListener('click', function() {
+                const email = loginEmail.value.trim();
+                const pass = loginPassword.value;
+                if (!email || !pass) { authError.textContent = 'Please fill in all fields'; return; }
+                if (pass.length < 6) { authError.textContent = 'Password must be at least 6 characters'; return; }
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then(() => {
+                        showToast('Account created! Please set your nickname.', 'success');
+                    })
+                    .catch(err => { authError.textContent = err.message; });
+            });
+
+            // Enter key
+            loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginBtn.click(); });
+            loginEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginBtn.click(); });
+
             // Save Nickname
-            saveNicknameBtn.addEventListener('click', () => {
+            saveNicknameBtn.addEventListener('click', function() {
                 const nick = nicknameInput.value.trim();
-                if (!nick) {
-                    nicknameStatus.textContent = '⚠️ Please enter a nickname';
-                    nicknameStatus.style.color = 'var(--danger)';
-                    return;
-                }
-                if (nick.length > 20) {
-                    nicknameStatus.textContent = '⚠️ Nickname must be 20 characters or less';
-                    nicknameStatus.style.color = 'var(--danger)';
-                    return;
-                }
+                if (!nick) { nicknameStatus.textContent = '⚠️ Please enter a nickname';
+                    nicknameStatus.style.color = 'var(--danger)'; return; }
+                if (nick.length > 20) { nicknameStatus.textContent = '⚠️ Max 20 characters';
+                    nicknameStatus.style.color = 'var(--danger)'; return; }
                 if (currentUser) {
                     const userRef = db.ref('formula21/users/' + currentUser.uid);
                     userRef.set({
@@ -2142,15 +1960,41 @@
                 }
             });
 
-            nicknameInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') saveNicknameBtn.click();
-            });
+            nicknameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveNicknameBtn.click(); });
 
             // Logout
-            logoutBtn.addEventListener('click', () => {
+            logoutBtn.addEventListener('click', function() {
                 auth.signOut().then(() => {
                     showToast('Signed out', 'info');
                 });
+            });
+
+            // ============================================================
+            // AUTH STATE LISTENER
+            // ============================================================
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    const userRef = db.ref('formula21/users/' + user.uid);
+                    userRef.once('value').then((snap) => {
+                        const data = snap.val();
+                        if (data && data.nickname) {
+                            currentNickname = data.nickname;
+                            showUserInfo(user, currentNickname);
+                            hideAuthOverlay();
+                            loadDataFromFirebase();
+                        } else {
+                            showUserInfo(user, '');
+                            showNicknameSetup();
+                        }
+                    });
+                } else {
+                    currentUser = null;
+                    currentNickname = '';
+                    showAuthOverlay();
+                    nicknameSection.classList.add('hidden');
+                    userInfoSection.classList.add('hidden');
+                }
             });
 
             // ============================================================
@@ -2185,9 +2029,7 @@
                         };
                         dataRef.set(cachedData);
                     }
-                    // Check daily reset
                     checkDailyReset();
-                    // Update UI
                     updateAllUI();
                     const active = document.querySelector('.page.active');
                     if (active) {
@@ -2237,7 +2079,6 @@
                 $('#dateDisplay').textContent = d;
                 const s = cachedData.settings.streak || 0;
                 $('#streakNumber').textContent = s;
-                $('#streakDisplay').innerHTML = '🔥 ' + s + ' day' + (s !== 1 ? 's' : '');
             }
 
             // ============================================================
@@ -2487,7 +2328,7 @@
             $('#taskInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('#addTaskBtn').click(); });
 
             // ============================================================
-            // HABITS
+            // HABITS (similar pattern — keep same as before)
             // ============================================================
             function renderHabits() {
                 const habits = cachedData.habits.filter(h => h.date === getToday());
@@ -2635,7 +2476,7 @@
             });
 
             // ============================================================
-            // CHALLENGES — with participants
+            // CHALLENGES (with participants)
             // ============================================================
             function renderChallenges() {
                 const container = $('#challengeList');
@@ -2665,7 +2506,6 @@
 
                     const todayDone = c.days && c.days.some(d => d.day === currentDay && d.done);
 
-                    // Participants
                     let participantsHtml = '';
                     if (c.participants) {
                         const names = Object.values(c.participants);
@@ -2702,7 +2542,6 @@
                     `;
                 }).join('');
 
-                // Join challenge
                 container.querySelectorAll('.challenge-join').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
@@ -2717,7 +2556,6 @@
                     });
                 });
 
-                // Toggle day
                 container.querySelectorAll('.challenge-toggle').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
@@ -2854,6 +2692,7 @@
             // ANALYTICS
             // ============================================================
             function renderAnalytics() {
+                // (same as before — keeping concise)
                 const ctx1 = document.getElementById('analyticsTasksChart').getContext('2d');
                 if (analyticsTasksChart) analyticsTasksChart.destroy();
                 const taskData = getWeeklyCompletion();
@@ -2993,7 +2832,6 @@
                     users.push({ name: m.name, score: (m.score || 0) + base, isSelf: false, uid: m.userId });
                 }
 
-                // Deduplicate by name
                 const unique = [];
                 const seen = new Set();
                 for (let u of users) {
@@ -3282,18 +3120,16 @@
             }
 
             // ============================================================
-            // REPORTS — Enhanced
+            // REPORTS
             // ============================================================
             function renderReports() {
                 const d = getReportData();
 
-                // Summary cards
                 $('#repTotalTasks').textContent = d.tasks.length;
                 $('#repTotalHabits').textContent = d.habits.length;
                 $('#repTotalStudy').textContent = d.studyTotal.toFixed(1);
                 $('#repStreak').textContent = d.streak;
 
-                // Detailed grid
                 $('#repTasksTotal').textContent = d.tasks.length;
                 $('#repTasksDone').textContent = d.tasks.filter(t => t.done).length;
                 $('#repHabitsTotal').textContent = d.habits.length;
@@ -3305,7 +3141,6 @@
                 $('#repChallengeTotal').textContent = d.challenges.length;
                 $('#repStreakTotal').textContent = d.streak;
 
-                // Task table
                 const taskBody = $('#reportTaskBody');
                 const recentTasks = [...d.tasks].reverse().slice(0, 20);
                 if (recentTasks.length === 0) {
@@ -3316,7 +3151,6 @@
                     ).join('');
                 }
 
-                // Habit table
                 const habitBody = $('#reportHabitBody');
                 const recentHabits = [...d.habits].reverse().slice(0, 20);
                 if (recentHabits.length === 0) {
@@ -3327,7 +3161,6 @@
                     ).join('');
                 }
 
-                // Study table
                 const studyBody = $('#reportStudyBody');
                 const recentStudy = [...d.studyLogs].reverse().slice(0, 20);
                 if (recentStudy.length === 0) {
@@ -3338,7 +3171,6 @@
                     ).join('');
                 }
 
-                // Mood table
                 const moodBody = $('#reportMoodBody');
                 const recentMood = [...d.moodLogs].reverse().slice(0, 20);
                 if (recentMood.length === 0) {
@@ -3377,9 +3209,9 @@
                 doc.setFontSize(12);
                 doc.text('Date: ' + d.date, 20, 45);
                 doc.text('Total Tasks: ' + d.tasks.length + ' (done: ' + d.tasks.filter(t => t.done).length + ')', 20,
-                55);
+                    55);
                 doc.text('Total Habits: ' + d.habits.length + ' (done: ' + d.habits.filter(h => h.done).length + ')', 20,
-                65);
+                    65);
                 doc.text('Total Study: ' + d.studyTotal.toFixed(1) + ' hrs', 20, 75);
                 doc.text('Streak: ' + d.streak + ' days', 20, 85);
                 doc.text('Team: ' + d.team.length + ' members', 20, 95);
@@ -3479,7 +3311,6 @@
             resetModalConfirm.addEventListener('click', function() {
                 const pass = resetPasswordInput.value.trim();
                 if (pass === RESET_PASSWORD) {
-                    // Perform reset
                     cachedData.tasks = [];
                     cachedData.habits = [];
                     cachedData.studyLogs = [];
@@ -3531,12 +3362,11 @@
             // ============================================================
             // INIT
             // ============================================================
-            // Auto‑save every 15s
             setInterval(() => { if (currentUser) saveData(); }, 15000);
             window.addEventListener('beforeunload', () => { if (currentUser) saveData(); });
 
-            console.log('✦ Formula21 — Enhanced with Auth, Nicknames, Challenge Participants & Reset');
-            console.log('🔥 Orange / Gold Theme · Google Sign‑In · Real‑time Sync');
+            console.log('✦ Formula21 — Email/Password Auth + Nicknames + Reset');
+            console.log('🔥 Orange / Gold Theme · Real‑time Sync');
 
         })();
     </script>

@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Formula21 – Real‑time Productivity Suite</title>
 
-    <!-- Google Fonts (Modern & Premium) -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
 
-    <!-- Firebase SDKs (compat for ease) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
     </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js">
+    </script>
 
-    <!-- Chart.js v4 -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
 
-    <!-- jsPDF, SheetJS, html2canvas for reports -->
+    <!-- jsPDF, SheetJS, html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">
@@ -33,7 +32,7 @@
 
     <style>
         /* ============================================================
-                   GLOBAL RESET & VARIABLES — Warm Orange / Gold Theme
+                   GLOBAL RESET — Warm Orange / Gold Theme
                    ============================================================ */
         * {
             margin: 0;
@@ -85,28 +84,181 @@
             width: 6px;
             height: 6px;
         }
-
         ::-webkit-scrollbar-track {
             background: var(--bg-secondary);
         }
-
         ::-webkit-scrollbar-thumb {
             background: var(--accent-1);
             border-radius: 20px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-2);
+        /* ===== AUTH OVERLAY ===== */
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(12, 10, 10, 0.92);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.6s ease;
+        }
+        #authOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #authOverlay .auth-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        #authOverlay .auth-box h2 {
+            font-size: 32px;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        #authOverlay .auth-box p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+        #authOverlay .auth-box .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px;
+            background: #fff;
+            color: #222;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        #authOverlay .auth-box .google-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 24px rgba(255, 255, 255, 0.1);
+        }
+        #authOverlay .auth-box .google-btn img {
+            width: 24px;
+            height: 24px;
+        }
+        #authOverlay .auth-box .nickname-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        #authOverlay .auth-box .nickname-section label {
+            display: block;
+            text-align: left;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        #authOverlay .auth-box .nickname-section .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        #authOverlay .auth-box .nickname-section .input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(12, 10, 10, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        #authOverlay .auth-box .nickname-section .input-group input:focus {
+            border-color: var(--accent-1);
+        }
+        #authOverlay .auth-box .nickname-section .input-group button {
+            padding: 12px 24px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        #authOverlay .auth-box .nickname-section .input-group button:hover {
+            transform: scale(1.04);
+        }
+        #authOverlay .auth-box .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(12, 10, 10, 0.4);
+            border-radius: var(--radius-sm);
+            margin-top: 12px;
+        }
+        #authOverlay .auth-box .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        #authOverlay .auth-box .user-info .details {
+            text-align: left;
+            flex: 1;
+        }
+        #authOverlay .auth-box .user-info .details .name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        #authOverlay .auth-box .user-info .details .email {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        #authOverlay .auth-box .user-info .logout-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            padding: 4px 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        #authOverlay .auth-box .user-info .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
         }
 
-        /* ============================================================
-                   SIDEBAR — Glass‑morphism with warm tint
-                   ============================================================ */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 270px;
             background: rgba(22, 17, 17, 0.88);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-right: 1px solid var(--border-color);
             height: 100vh;
             position: sticky;
@@ -124,7 +276,6 @@
             margin-bottom: 20px;
             text-align: center;
         }
-
         .sidebar-brand .logo {
             font-size: 34px;
             font-weight: 900;
@@ -138,31 +289,55 @@
             justify-content: center;
             gap: 6px;
         }
-
         .sidebar-brand .logo span {
             font-size: 28px;
             -webkit-text-fill-color: initial;
             color: var(--accent-1);
         }
-
         .sidebar-brand .tagline {
             color: var(--text-muted);
             font-size: 13px;
             font-weight: 400;
-            letter-spacing: 0.3px;
             margin-top: 4px;
             -webkit-text-fill-color: var(--text-muted);
+        }
+        .sidebar-brand .user-badge {
+            margin-top: 12px;
+            padding: 8px 14px;
+            background: rgba(249, 115, 22, 0.1);
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+        }
+        .sidebar-brand .user-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
         }
 
         .sidebar-nav {
             list-style: none;
             padding: 0 14px;
         }
-
         .sidebar-nav li {
             margin-bottom: 2px;
         }
-
         .sidebar-nav a {
             display: flex;
             align-items: center;
@@ -176,20 +351,16 @@
             font-weight: 500;
             cursor: pointer;
             background: transparent;
-            position: relative;
         }
-
         .sidebar-nav a .icon {
             font-size: 20px;
             width: 28px;
             text-align: center;
             flex-shrink: 0;
         }
-
         .sidebar-nav a .label {
             flex: 1;
         }
-
         .sidebar-nav a .badge {
             font-size: 10px;
             background: var(--accent-1);
@@ -199,34 +370,28 @@
             font-weight: 700;
             opacity: 0.8;
         }
-
         .sidebar-nav a:hover {
             background: var(--bg-card);
             color: var(--text-primary);
             transform: translateX(4px);
         }
-
         .sidebar-nav a.active {
             background: var(--accent-gradient);
             color: #fff;
             box-shadow: 0 4px 24px rgba(249, 115, 22, 0.35);
             font-weight: 600;
         }
-
         .sidebar-nav a.active .badge {
             background: #fff;
             color: var(--accent-1);
         }
-
         .sidebar-nav .nav-divider {
             height: 1px;
             background: var(--border-color);
             margin: 12px 18px;
         }
 
-        /* ============================================================
-                   MAIN CONTENT
-                   ============================================================ */
+        /* ===== MAIN CONTENT ===== */
         .main-content {
             flex: 1;
             padding: 28px 36px 50px 36px;
@@ -234,9 +399,7 @@
             max-height: 100vh;
         }
 
-        /* ============================================================
-                   HEADER — Glass bar
-                   ============================================================ */
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -244,14 +407,12 @@
             padding: 18px 28px;
             background: rgba(22, 17, 17, 0.6);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-radius: var(--radius);
             border: 1px solid var(--border-color);
             margin-bottom: 32px;
             flex-wrap: wrap;
             gap: 14px;
         }
-
         .header-left h1 {
             font-size: 26px;
             font-weight: 800;
@@ -261,21 +422,18 @@
             background-clip: text;
             letter-spacing: -0.3px;
         }
-
         .header-left .sub {
             color: var(--text-secondary);
             font-size: 14px;
             font-weight: 400;
             -webkit-text-fill-color: var(--text-secondary);
         }
-
         .header-right {
             display: flex;
             align-items: center;
             gap: 16px;
             flex-wrap: wrap;
         }
-
         .header-right .date-badge {
             background: rgba(30, 22, 20, 0.7);
             backdrop-filter: blur(4px);
@@ -286,7 +444,6 @@
             border: 1px solid var(--border-color);
             font-weight: 500;
         }
-
         .header-right .streak-badge {
             background: var(--accent-gradient);
             padding: 8px 22px;
@@ -300,41 +457,29 @@
             gap: 8px;
         }
 
-        .header-right .streak-badge .fire {
-            font-size: 18px;
-        }
-
-        /* ============================================================
-                   PAGES
-                   ============================================================ */
+        /* ===== PAGES ===== */
         .page {
             display: none;
             animation: fadeSlide 0.5s ease forwards;
         }
-
         .page.active {
             display: block;
         }
-
         @keyframes fadeSlide {
             from {
                 opacity: 0;
                 transform: translateY(30px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        /* ============================================================
-                   CARDS — Glass with warm glow
-                   ============================================================ */
+        /* ===== CARDS ===== */
         .card {
             background: var(--bg-card);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-radius: var(--radius);
             padding: 28px 30px;
             border: 1px solid var(--border-color);
@@ -344,7 +489,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .card::before {
             content: '';
             position: absolute;
@@ -355,13 +499,11 @@
             background: radial-gradient(circle, rgba(249, 115, 22, 0.03) 0%, transparent 70%);
             pointer-events: none;
         }
-
         .card:hover {
             border-color: rgba(249, 115, 22, 0.25);
             transform: translateY(-2px);
             box-shadow: 0 16px 56px rgba(0, 0, 0, 0.5), var(--accent-glow);
         }
-
         .card-title {
             font-size: 20px;
             font-weight: 700;
@@ -372,11 +514,9 @@
             color: var(--text-primary);
             letter-spacing: -0.2px;
         }
-
         .card-title .icon {
             font-size: 24px;
         }
-
         .card-title .chip {
             font-size: 12px;
             font-weight: 600;
@@ -387,30 +527,24 @@
             margin-left: auto;
         }
 
-        /* ============================================================
-                   GRID LAYOUTS
-                   ============================================================ */
+        /* ===== GRIDS ===== */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
         }
-
         .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
         }
-
         .grid-4 {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 20px;
         }
 
-        /* ============================================================
-                   STAT CARDS — Power BI style
-                   ============================================================ */
+        /* ===== STAT CARDS ===== */
         .stat-card {
             background: rgba(22, 17, 17, 0.6);
             backdrop-filter: blur(8px);
@@ -422,7 +556,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .stat-card::after {
             content: '';
             position: absolute;
@@ -434,16 +567,13 @@
             opacity: 0;
             transition: var(--transition);
         }
-
         .stat-card:hover::after {
             opacity: 1;
         }
-
         .stat-card:hover {
             border-color: rgba(249, 115, 22, 0.3);
             transform: translateY(-4px);
         }
-
         .stat-card .number {
             font-size: 38px;
             font-weight: 900;
@@ -453,7 +583,6 @@
             background-clip: text;
             line-height: 1.2;
         }
-
         .stat-card .label {
             font-size: 14px;
             color: var(--text-secondary);
@@ -461,24 +590,7 @@
             font-weight: 500;
         }
 
-        .stat-card .trend {
-            font-size: 12px;
-            margin-top: 6px;
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 30px;
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-        }
-
-        .stat-card .trend.down {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-
-        /* ============================================================
-                   PROGRESS RING (Circular) — Power BI style
-                   ============================================================ */
+        /* ===== PROGRESS RINGS ===== */
         .progress-ring-wrap {
             display: flex;
             align-items: center;
@@ -486,25 +598,21 @@
             gap: 30px;
             flex-wrap: wrap;
         }
-
         .progress-ring {
             position: relative;
             width: 120px;
             height: 120px;
         }
-
         .progress-ring svg {
             transform: rotate(-90deg);
             width: 120px;
             height: 120px;
         }
-
         .progress-ring .bg-circle {
             fill: none;
             stroke: rgba(255, 255, 255, 0.05);
             stroke-width: 8;
         }
-
         .progress-ring .fg-circle {
             fill: none;
             stroke: url(#ringGrad);
@@ -512,7 +620,6 @@
             stroke-linecap: round;
             transition: stroke-dashoffset 1s ease;
         }
-
         .progress-ring .center-text {
             position: absolute;
             inset: 0;
@@ -521,14 +628,12 @@
             align-items: center;
             justify-content: center;
         }
-
         .progress-ring .center-text .value {
             font-size: 28px;
             font-weight: 800;
             color: var(--text-primary);
             line-height: 1;
         }
-
         .progress-ring .center-text .label {
             font-size: 11px;
             color: var(--text-muted);
@@ -537,15 +642,12 @@
             letter-spacing: 0.5px;
         }
 
-        /* ============================================================
-                   INPUT GROUP
-                   ============================================================ */
+        /* ===== INPUTS ===== */
         .input-group {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .input-group input,
         .input-group select,
         .input-group textarea {
@@ -562,17 +664,14 @@
             outline: none;
             transition: var(--transition);
         }
-
         .input-group input:focus,
         .input-group select:focus {
             border-color: var(--accent-1);
             box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
         }
-
         .input-group input::placeholder {
             color: var(--text-muted);
         }
-
         .input-group button {
             padding: 12px 32px;
             background: var(--accent-gradient);
@@ -587,25 +686,30 @@
             box-shadow: 0 4px 20px rgba(249, 115, 22, 0.25);
             font-family: 'Inter', sans-serif;
         }
-
         .input-group button:hover {
             transform: scale(1.04);
             box-shadow: 0 6px 32px rgba(249, 115, 22, 0.4);
         }
-
         .input-group button.btn-danger {
             background: var(--danger);
             box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
         }
-
         .input-group button.btn-success {
             background: var(--success);
             box-shadow: 0 4px 20px rgba(34, 197, 94, 0.25);
         }
+        .input-group button.btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+            color: var(--text-secondary);
+        }
+        .input-group button.btn-outline:hover {
+            background: var(--bg-card);
+            transform: none;
+        }
 
-        /* ============================================================
-                   ITEM LISTS
-                   ============================================================ */
+        /* ===== ITEM LISTS ===== */
         .item-list {
             display: flex;
             flex-direction: column;
@@ -614,7 +718,6 @@
             overflow-y: auto;
             padding-right: 6px;
         }
-
         .item-row {
             display: flex;
             align-items: center;
@@ -628,12 +731,10 @@
             gap: 14px;
             flex-wrap: wrap;
         }
-
         .item-row:hover {
             border-color: rgba(249, 115, 22, 0.25);
             background: rgba(30, 22, 20, 0.5);
         }
-
         .item-row .info {
             display: flex;
             align-items: center;
@@ -641,7 +742,6 @@
             flex: 1;
             min-width: 150px;
         }
-
         .item-row .info .checkbox {
             width: 24px;
             height: 24px;
@@ -657,24 +757,27 @@
             font-size: 14px;
             flex-shrink: 0;
         }
-
         .item-row .info .checkbox.done {
             background: var(--accent-gradient);
             border-color: var(--accent-1);
             color: #fff;
             box-shadow: 0 0 20px rgba(249, 115, 22, 0.25);
         }
-
         .item-row .info .text {
             font-size: 15px;
             font-weight: 500;
         }
-
         .item-row .info .text.done-text {
             text-decoration: line-through;
             color: var(--text-muted);
         }
-
+        .item-row .info .user-tag {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 2px 10px;
+            border-radius: 30px;
+        }
         .item-row .meta {
             display: flex;
             align-items: center;
@@ -683,7 +786,6 @@
             color: var(--text-secondary);
             flex-wrap: wrap;
         }
-
         .item-row .meta .tag {
             background: rgba(249, 115, 22, 0.1);
             padding: 4px 14px;
@@ -692,12 +794,10 @@
             font-weight: 500;
             color: var(--accent-2);
         }
-
         .item-row .meta .tag.done-tag {
             background: rgba(34, 197, 94, 0.12);
             color: var(--success);
         }
-
         .item-row .meta .delete-btn {
             background: none;
             border: none;
@@ -708,28 +808,19 @@
             padding: 0 6px;
             opacity: 0.5;
         }
-
         .item-row .meta .delete-btn:hover {
             opacity: 1;
             transform: scale(1.25);
         }
 
-        /* ============================================================
-                   CHART CONTAINERS
-                   ============================================================ */
+        /* ===== CHART ===== */
         .chart-container {
             position: relative;
             height: 250px;
             margin-top: 6px;
         }
 
-        .chart-container-sm {
-            height: 180px;
-        }
-
-        /* ============================================================
-                   LEADERBOARD
-                   ============================================================ */
+        /* ===== LEADERBOARD ===== */
         .leaderboard-item {
             display: flex;
             align-items: center;
@@ -741,46 +832,37 @@
             margin-bottom: 8px;
             transition: var(--transition);
         }
-
         .leaderboard-item:hover {
             border-color: rgba(249, 115, 22, 0.25);
         }
-
         .leaderboard-item .rank {
             font-weight: 900;
             font-size: 20px;
             color: var(--accent-1);
             min-width: 38px;
         }
-
         .leaderboard-item .name {
             flex: 1;
             font-weight: 600;
         }
-
         .leaderboard-item .score {
             font-weight: 700;
             color: var(--accent-2);
         }
-
         .leaderboard-item .badge-icon {
             font-size: 26px;
         }
-
         .leaderboard-item.self {
             border-color: rgba(249, 115, 22, 0.35);
             background: rgba(249, 115, 22, 0.06);
         }
 
-        /* ============================================================
-                   ACHIEVEMENTS
-                   ============================================================ */
+        /* ===== ACHIEVEMENTS ===== */
         .achievement-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 16px;
         }
-
         .achievement-card {
             background: rgba(12, 10, 10, 0.5);
             backdrop-filter: blur(4px);
@@ -790,42 +872,30 @@
             text-align: center;
             transition: var(--transition);
         }
-
         .achievement-card.unlocked {
             border-color: var(--accent-1);
             background: rgba(249, 115, 22, 0.06);
             box-shadow: 0 0 30px rgba(249, 115, 22, 0.05);
         }
-
         .achievement-card .emoji {
             font-size: 40px;
         }
-
         .achievement-card .title {
             font-size: 14px;
             font-weight: 700;
             margin-top: 8px;
         }
-
         .achievement-card .desc {
             font-size: 11px;
             color: var(--text-muted);
             margin-top: 2px;
         }
-
         .achievement-card.locked {
             opacity: 0.4;
             filter: grayscale(0.8);
         }
 
-        .achievement-card .lock-icon {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        /* ============================================================
-                   TIMER (Pomodoro)
-                   ============================================================ */
+        /* ===== TIMER ===== */
         .timer-display {
             font-size: 76px;
             font-weight: 900;
@@ -843,14 +913,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
         .timer-controls {
             display: flex;
             justify-content: center;
             gap: 16px;
             flex-wrap: wrap;
         }
-
         .timer-controls button {
             padding: 12px 34px;
             border: none;
@@ -865,32 +933,23 @@
             backdrop-filter: blur(4px);
             font-family: 'Inter', sans-serif;
         }
-
         .timer-controls button.primary {
             background: var(--accent-gradient);
             color: #fff;
             border: none;
             box-shadow: 0 4px 24px rgba(249, 115, 22, 0.3);
         }
-
         .timer-controls button.primary:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 36px rgba(249, 115, 22, 0.45);
         }
 
-        .timer-controls button:hover:not(.primary) {
-            background: var(--bg-card);
-        }
-
-        /* ============================================================
-                   MOOD SELECTOR
-                   ============================================================ */
+        /* ===== MOOD ===== */
         .mood-options {
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
         }
-
         .mood-options button {
             padding: 10px 24px;
             border: 2px solid var(--border-color);
@@ -904,74 +963,17 @@
             font-family: 'Inter', sans-serif;
             font-weight: 500;
         }
-
         .mood-options button:hover {
             border-color: var(--accent-1);
             transform: scale(1.06);
         }
-
         .mood-options button.selected {
             border-color: var(--accent-1);
             background: rgba(249, 115, 22, 0.12);
             box-shadow: 0 0 30px rgba(249, 115, 22, 0.08);
         }
 
-        /* ============================================================
-                   REPORT BUTTONS
-                   ============================================================ */
-        .report-buttons {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .report-buttons button {
-            padding: 10px 24px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            background: rgba(12, 10, 10, 0.6);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(4px);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .report-buttons button:hover {
-            transform: scale(1.05);
-            border-color: var(--accent-1);
-        }
-
-        .report-buttons button.pdf {
-            background: #dc2626;
-            color: #fff;
-            border: none;
-        }
-
-        .report-buttons button.excel {
-            background: #16a34a;
-            color: #fff;
-            border: none;
-        }
-
-        .report-buttons button.csv {
-            background: #2563eb;
-            color: #fff;
-            border: none;
-        }
-
-        .report-buttons button.png {
-            background: var(--accent-gradient);
-            color: #fff;
-            border: none;
-        }
-
-        /* ============================================================
-                   CHALLENGE CARD
-                   ============================================================ */
+        /* ===== CHALLENGE ===== */
         .challenge-card {
             background: rgba(12, 10, 10, 0.5);
             backdrop-filter: blur(4px);
@@ -981,18 +983,15 @@
             margin-bottom: 14px;
             transition: var(--transition);
         }
-
         .challenge-card:hover {
             border-color: rgba(249, 115, 22, 0.2);
         }
-
         .challenge-card .days-grid {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
             margin-top: 12px;
         }
-
         .challenge-card .days-grid .day {
             width: 32px;
             height: 32px;
@@ -1007,22 +1006,182 @@
             color: var(--text-secondary);
             transition: var(--transition);
         }
-
         .challenge-card .days-grid .day.done {
             background: var(--accent-gradient);
             border-color: var(--accent-1);
             color: #fff;
             box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
         }
-
         .challenge-card .days-grid .day.today {
             border-color: var(--accent-1);
             box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
         }
+        .challenge-card .participants {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .challenge-card .participants .pill {
+            background: rgba(249, 115, 22, 0.1);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+        }
+        .challenge-card .participants .pill .highlight {
+            color: var(--accent-1);
+            font-weight: 600;
+        }
 
-        /* ============================================================
-                   TOAST
-                   ============================================================ */
+        /* ===== REPORTS ===== */
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .report-grid .report-item {
+            background: rgba(12, 10, 10, 0.4);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            border: 1px solid var(--border-color);
+        }
+        .report-grid .report-item .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .report-grid .report-item .value {
+            font-size: 24px;
+            font-weight: 800;
+            margin-top: 4px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .report-grid .report-item .value.text-white {
+            -webkit-text-fill-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+        .report-table-wrap {
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .report-table th {
+            text-align: left;
+            padding: 10px 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .report-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+        }
+        .report-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ===== RESET MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 40px 36px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: var(--shadow);
+        }
+        .modal-box h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .modal-box p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .modal-box .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-box .input-group input {
+            padding: 12px 16px;
+            background: rgba(12, 10, 10, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+        }
+        .modal-box .input-group input:focus {
+            border-color: var(--accent-1);
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .modal-box .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-box .modal-actions .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .modal-box .modal-actions .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .modal-box .modal-actions .btn-reset {
+            background: var(--danger);
+            color: #fff;
+        }
+        .modal-box .modal-actions .btn-reset:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -1035,7 +1194,7 @@
             box-shadow: var(--shadow);
             color: var(--text-primary);
             font-size: 15px;
-            z-index: 999;
+            z-index: 9999;
             transform: translateY(120px);
             opacity: 0;
             transition: all 0.5s ease;
@@ -1043,31 +1202,24 @@
             border-left: 6px solid var(--accent-1);
             font-weight: 500;
         }
-
         .toast.show {
             transform: translateY(0);
             opacity: 1;
         }
-
         .toast.success {
             border-left-color: var(--success);
         }
-
         .toast.error {
             border-left-color: var(--danger);
         }
-
         .toast.warning {
             border-left-color: var(--warning);
         }
 
-        /* ============================================================
-                   MOBILE MENU
-                   ============================================================ */
+        /* ===== MOBILE ===== */
         .menu-toggle {
             display: none;
         }
-
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -1076,34 +1228,29 @@
             z-index: 150;
             backdrop-filter: blur(6px);
         }
-
         .sidebar-overlay.active {
             display: block;
         }
 
-        /* ============================================================
-                   RESPONSIVE
-                   ============================================================ */
         @media (max-width: 1200px) {
             .grid-4 {
                 grid-template-columns: 1fr 1fr;
             }
         }
-
         @media (max-width: 1024px) {
             .grid-2 {
                 grid-template-columns: 1fr;
             }
-
             .grid-3 {
                 grid-template-columns: 1fr 1fr;
             }
-
             .main-content {
                 padding: 20px 24px 40px 24px;
             }
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
         }
-
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -1114,35 +1261,28 @@
                 transition: transform 0.35s ease;
                 border-right: 1px solid var(--border-color);
             }
-
             .sidebar.open {
                 transform: translateX(0);
             }
-
             .main-content {
                 padding: 16px;
                 max-height: none;
                 overflow-y: visible;
             }
-
             .grid-3 {
                 grid-template-columns: 1fr;
             }
-
             .grid-4 {
                 grid-template-columns: 1fr 1fr;
             }
-
             .header {
                 flex-direction: column;
                 align-items: flex-start;
                 padding: 16px 20px;
             }
-
             .header-left h1 {
                 font-size: 22px;
             }
-
             .menu-toggle {
                 display: flex !important;
                 position: fixed;
@@ -1162,157 +1302,170 @@
                 justify-content: center;
                 transition: var(--transition);
             }
-
             .menu-toggle:hover {
                 transform: scale(1.06);
             }
-
             .timer-display {
                 font-size: 52px;
                 letter-spacing: 4px;
             }
-
             .progress-ring-wrap {
                 gap: 20px;
             }
-
             .progress-ring {
                 width: 100px;
                 height: 100px;
             }
-
             .progress-ring svg {
                 width: 100px;
                 height: 100px;
             }
-
             .card {
                 padding: 20px;
             }
-
-            .report-buttons button {
-                flex: 1;
-                min-width: 80px;
-                text-align: center;
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+            #authOverlay .auth-box {
+                padding: 32px 24px;
             }
         }
-
         @media (max-width: 480px) {
             .grid-4 {
                 grid-template-columns: 1fr 1fr;
                 gap: 12px;
             }
-
             .stat-card .number {
                 font-size: 28px;
             }
-
             .item-row {
                 padding: 12px 14px;
             }
-
             .header-right .date-badge {
                 font-size: 12px;
                 padding: 6px 14px;
             }
-
             .header-right .streak-badge {
                 font-size: 13px;
                 padding: 6px 16px;
             }
         }
 
-        /* ============================================================
-                   UTILITY
-                   ============================================================ */
+        /* ===== UTILITY ===== */
         .mt-8 {
             margin-top: 8px;
         }
-
         .mt-12 {
             margin-top: 12px;
         }
-
         .mt-16 {
             margin-top: 16px;
         }
-
         .mt-24 {
             margin-top: 24px;
         }
-
         .mb-16 {
             margin-bottom: 16px;
         }
-
         .flex {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .flex-between {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .flex-center {
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
         .text-center {
             text-align: center;
         }
-
         .text-muted {
             color: var(--text-muted);
         }
-
         .text-accent {
             color: var(--accent-1);
         }
-
         .text-success {
             color: var(--success);
         }
-
         .text-danger {
             color: var(--danger);
         }
-
         .text-warning {
             color: var(--warning);
         }
-
         .w-full {
             width: 100%;
         }
-
         .hidden {
             display: none !important;
         }
-
         .gap-8 {
             gap: 8px;
         }
-
         .gap-12 {
             gap: 12px;
         }
-
-        /* SVG gradient defs (for rings) */
-        .ring-grad-def {
-            position: absolute;
-            width: 0;
-            height: 0;
+        .text-sm {
+            font-size: 13px;
+        }
+        .text-xs {
+            font-size: 11px;
+        }
+        .font-bold {
+            font-weight: 700;
+        }
+        .font-mono {
+            font-family: 'Inter', monospace;
         }
     </style>
 </head>
-
 <body>
+
+    <!-- ============================================================
+    AUTH OVERLAY
+    ============================================================ -->
+    <div id="authOverlay">
+        <div class="auth-box">
+            <h2>✦ Formula21</h2>
+            <p>Sign in to track your progress<br />and collaborate with your team.</p>
+
+            <!-- Google Sign-In Button -->
+            <button class="google-btn" id="googleSignInBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Sign in with Google
+            </button>
+
+            <!-- Nickname Section (shown after sign-in) -->
+            <div id="nicknameSection" class="nickname-section hidden">
+                <label>Choose your display name</label>
+                <div class="input-group">
+                    <input type="text" id="nicknameInput" placeholder="Enter a nickname..." maxlength="20" />
+                    <button id="saveNicknameBtn">Save</button>
+                </div>
+                <div id="nicknameStatus" class="text-muted text-sm mt-8"></div>
+            </div>
+
+            <!-- User Info (shown when signed in) -->
+            <div id="userInfoSection" class="hidden">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">?</div>
+                    <div class="details">
+                        <div class="name" id="userDisplayName">User</div>
+                        <div class="email" id="userEmail">email@example.com</div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn">Sign Out</button>
+                </div>
+                <div class="text-sm text-muted mt-8" id="userNicknameDisplay"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- ============================================================
     SIDEBAR
@@ -1325,24 +1478,24 @@
                 <span>✦</span> Formula21
             </div>
             <div class="tagline">Real‑time · Team · Growth</div>
+            <div class="user-badge" id="sidebarUserBadge">
+                <span class="dot"></span>
+                <span id="sidebarNickname">Guest</span>
+            </div>
         </div>
         <ul class="sidebar-nav">
-            <li><a class="active" data-page="dashboard"><span class="icon">📊</span><span
-                        class="label">Dashboard</span></a></li>
+            <li><a class="active" data-page="dashboard"><span class="icon">📊</span><span class="label">Dashboard</span></a></li>
             <li><a data-page="tasks"><span class="icon">📋</span><span class="label">Daily Tasks</span></a></li>
             <li><a data-page="habits"><span class="icon">🔄</span><span class="label">Habits</span></a></li>
             <li><a data-page="study"><span class="icon">📚</span><span class="label">Study Log</span></a></li>
-            <li><a data-page="challenge"><span class="icon">🏆</span><span class="label">21‑Day Challenge</span></a>
-            </li>
+            <li><a data-page="challenge"><span class="icon">🏆</span><span class="label">21‑Day Challenge</span></a></li>
             <li><a data-page="team"><span class="icon">👥</span><span class="label">Team</span></a></li>
             <li><a data-page="analytics"><span class="icon">📈</span><span class="label">Analytics</span></a></li>
-            <li><a data-page="leaderboard"><span class="icon">🥇</span><span class="label">Leaderboard</span><span
-                        class="badge">Live</span></a></li>
+            <li><a data-page="leaderboard"><span class="icon">🥇</span><span class="label">Leaderboard</span><span class="badge">Live</span></a></li>
             <li><a data-page="coach"><span class="icon">🤖</span><span class="label">AI Coach</span></a></li>
             <li><a data-page="mood"><span class="icon">😊</span><span class="label">Mood Tracker</span></a></li>
             <li><a data-page="focus"><span class="icon">🎯</span><span class="label">Focus Mode</span></a></li>
-            <li><a data-page="achievements"><span class="icon">🎖️</span><span class="label">Achievements</span></a>
-            </li>
+            <li><a data-page="achievements"><span class="icon">🎖️</span><span class="label">Achievements</span></a></li>
             <li><a data-page="reports"><span class="icon">📄</span><span class="label">Reports</span></a></li>
         </ul>
     </nav>
@@ -1361,7 +1514,7 @@
             <div class="header-right">
                 <span class="date-badge" id="dateDisplay"></span>
                 <span class="streak-badge" id="streakDisplay">
-                    <span class="fire">🔥</span> <span id="streakNumber">0</span> days
+                    🔥 <span id="streakNumber">0</span> days
                 </span>
             </div>
         </header>
@@ -1370,81 +1523,40 @@
         PAGE: DASHBOARD
         ============================================================ -->
         <section class="page active" id="page-dashboard">
-
-            <!-- Stat Cards -->
             <div class="grid-4" id="dashStats">
-                <div class="stat-card">
-                    <div class="number" id="statTasks">0/0</div>
-                    <div class="label">✅ Today's Tasks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" id="statHabits">0/0</div>
-                    <div class="label">🔄 Habits Done</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" id="statStudy">0.0</div>
-                    <div class="label">📚 Study (hrs)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number" id="statStreak">0</div>
-                    <div class="label">🔥 Streak</div>
-                </div>
+                <div class="stat-card"><div class="number" id="statTasks">0/0</div><div class="label">✅ Today's Tasks</div></div>
+                <div class="stat-card"><div class="number" id="statHabits">0/0</div><div class="label">🔄 Habits Done</div></div>
+                <div class="stat-card"><div class="number" id="statStudy">0.0</div><div class="label">📚 Study (hrs)</div></div>
+                <div class="stat-card"><div class="number" id="statStreak">0</div><div class="label">🔥 Streak</div></div>
             </div>
 
-            <!-- Progress Rings + Chart -->
             <div class="grid-2 mt-16">
                 <div class="card">
-                    <div class="card-title"><span class="icon">🎯</span> Today's Progress <span class="chip"
-                            id="dashPctLabel">0%</span></div>
+                    <div class="card-title"><span class="icon">🎯</span> Today's Progress <span class="chip" id="dashPctLabel">0%</span></div>
                     <div class="progress-ring-wrap">
-                        <!-- Ring 1: Tasks -->
                         <div class="progress-ring">
                             <svg viewBox="0 0 120 120">
-                                <defs>
-                                    <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#f97316" />
-                                        <stop offset="100%" stop-color="#f59e0b" />
-                                    </linearGradient>
-                                </defs>
-                                <circle class="bg-circle" cx="60" cy="60" r="50" />
-                                <circle class="fg-circle" id="ringTasks" cx="60" cy="60" r="50" stroke="url(#ringGrad1)"
-                                    stroke-dasharray="314.16" stroke-dashoffset="314.16" />
+                                <defs><linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                                <circle class="bg-circle" cx="60" cy="60" r="50"/>
+                                <circle class="fg-circle" id="ringTasks" cx="60" cy="60" r="50" stroke="url(#ringGrad1)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
                             </svg>
-                            <div class="center-text"><span class="value" id="ringTasksVal">0%</span><span
-                                    class="label">Tasks</span></div>
+                            <div class="center-text"><span class="value" id="ringTasksVal">0%</span><span class="label">Tasks</span></div>
                         </div>
-                        <!-- Ring 2: Habits -->
                         <div class="progress-ring">
                             <svg viewBox="0 0 120 120">
-                                <defs>
-                                    <linearGradient id="ringGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#fb923c" />
-                                        <stop offset="100%" stop-color="#f59e0b" />
-                                    </linearGradient>
-                                </defs>
-                                <circle class="bg-circle" cx="60" cy="60" r="50" />
-                                <circle class="fg-circle" id="ringHabits" cx="60" cy="60" r="50"
-                                    stroke="url(#ringGrad2)" stroke-dasharray="314.16" stroke-dashoffset="314.16" />
+                                <defs><linearGradient id="ringGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                                <circle class="bg-circle" cx="60" cy="60" r="50"/>
+                                <circle class="fg-circle" id="ringHabits" cx="60" cy="60" r="50" stroke="url(#ringGrad2)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
                             </svg>
-                            <div class="center-text"><span class="value" id="ringHabitsVal">0%</span><span
-                                    class="label">Habits</span></div>
+                            <div class="center-text"><span class="value" id="ringHabitsVal">0%</span><span class="label">Habits</span></div>
                         </div>
-                        <!-- Ring 3: Overall -->
                         <div class="progress-ring">
                             <svg viewBox="0 0 120 120">
-                                <defs>
-                                    <linearGradient id="ringGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#f97316" />
-                                        <stop offset="50%" stop-color="#fb923c" />
-                                        <stop offset="100%" stop-color="#f59e0b" />
-                                    </linearGradient>
-                                </defs>
-                                <circle class="bg-circle" cx="60" cy="60" r="50" />
-                                <circle class="fg-circle" id="ringOverall" cx="60" cy="60" r="50"
-                                    stroke="url(#ringGrad3)" stroke-dasharray="314.16" stroke-dashoffset="314.16" />
+                                <defs><linearGradient id="ringGrad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f97316"/><stop offset="50%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+                                <circle class="bg-circle" cx="60" cy="60" r="50"/>
+                                <circle class="fg-circle" id="ringOverall" cx="60" cy="60" r="50" stroke="url(#ringGrad3)" stroke-dasharray="314.16" stroke-dashoffset="314.16"/>
                             </svg>
-                            <div class="center-text"><span class="value" id="ringOverallVal">0%</span><span
-                                    class="label">Overall</span></div>
+                            <div class="center-text"><span class="value" id="ringOverallVal">0%</span><span class="label">Overall</span></div>
                         </div>
                     </div>
                 </div>
@@ -1455,10 +1567,8 @@
                 </div>
             </div>
 
-            <!-- Today's Tasks Preview -->
             <div class="card mt-16">
-                <div class="card-title"><span class="icon">📋</span> Today's Tasks <span class="chip"
-                        id="dashTaskChip">0 pending</span></div>
+                <div class="card-title"><span class="icon">📋</span> Today's Tasks <span class="chip" id="dashTaskChip">0 pending</span></div>
                 <div id="dashTaskList" class="item-list">
                     <div class="text-muted" style="padding:16px;">No tasks for today</div>
                 </div>
@@ -1527,9 +1637,7 @@
             <div class="grid-2 mt-16">
                 <div class="card">
                     <div class="card-title"><span class="icon">📊</span> Today's Study</div>
-                    <div id="studyTodayDisplay" class="text-center"
-                        style="font-size:34px;font-weight:900;padding:16px;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
-                        0.0 hrs</div>
+                    <div id="studyTodayDisplay" class="text-center" style="font-size:34px;font-weight:900;padding:16px;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">0.0 hrs</div>
                 </div>
                 <div class="card">
                     <div class="card-title"><span class="icon">📈</span> Weekly Study</div>
@@ -1555,6 +1663,7 @@
                     <input type="text" id="challengeInput" placeholder="e.g. Wake up at 5 AM" />
                     <button id="addChallengeBtn">Start Challenge</button>
                 </div>
+                <div class="text-muted text-sm mt-8">💡 Everyone in the team can join and track progress together.</div>
             </div>
 
             <div id="challengeList" class="mt-16">
@@ -1584,8 +1693,7 @@
 
             <div class="card mt-16">
                 <div class="card-title"><span class="icon">📊</span> Team Progress</div>
-                <div id="teamProgressDisplay" class="text-center text-muted" style="padding:28px;">Add members to see
-                    progress</div>
+                <div id="teamProgressDisplay" class="text-center text-muted" style="padding:28px;">Add members to see progress</div>
             </div>
         </section>
 
@@ -1620,8 +1728,7 @@
         ============================================================ -->
         <section class="page" id="page-leaderboard">
             <div class="card">
-                <div class="card-title"><span class="icon">🥇</span> Live Leaderboard <span
-                        class="chip">Real‑time</span></div>
+                <div class="card-title"><span class="icon">🥇</span> Live Leaderboard <span class="chip">Real‑time</span></div>
                 <div id="leaderboardList" class="item-list">
                     <div class="text-muted" style="padding:16px;">No data yet</div>
                 </div>
@@ -1634,13 +1741,10 @@
         <section class="page" id="page-coach">
             <div class="card">
                 <div class="card-title"><span class="icon">🤖</span> AI Productivity Coach</div>
-                <div id="coachOutput"
-                    style="background:rgba(12,10,10,0.5);backdrop-filter:blur(4px);border-radius:var(--radius-sm);padding:24px;border:1px solid var(--border-color);min-height:120px;line-height:1.9;">
+                <div id="coachOutput" style="background:rgba(12,10,10,0.5);backdrop-filter:blur(4px);border-radius:var(--radius-sm);padding:24px;border:1px solid var(--border-color);min-height:120px;line-height:1.9;">
                     <span class="text-muted">Analyzing your progress…</span>
                 </div>
-                <button id="coachRefreshBtn" class="mt-16"
-                    style="padding:12px 32px;background:var(--accent-gradient);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition);box-shadow:0 4px 20px rgba(249,115,22,0.25);">🔄
-                    Get New Insights</button>
+                <button id="coachRefreshBtn" class="mt-16" style="padding:12px 32px;background:var(--accent-gradient);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition);box-shadow:0 4px 20px rgba(249,115,22,0.25);">🔄 Get New Insights</button>
             </div>
         </section>
 
@@ -1673,8 +1777,7 @@
         ============================================================ -->
         <section class="page" id="page-focus">
             <div class="card text-center">
-                <div class="card-title" style="justify-content:center;"><span class="icon">🎯</span> Pomodoro Timer
-                </div>
+                <div class="card-title" style="justify-content:center;"><span class="icon">🎯</span> Pomodoro Timer</div>
                 <div class="timer-display" id="timerDisplay">25:00</div>
                 <div class="timer-controls">
                     <button class="primary" id="timerStartBtn">▶ Start</button>
@@ -1698,32 +1801,110 @@
         ============================================================ -->
         <section class="page" id="page-achievements">
             <div class="card">
-                <div class="card-title"><span class="icon">🎖️</span> Your Achievements <span class="chip"
-                        id="achieveCount">0 unlocked</span></div>
+                <div class="card-title"><span class="icon">🎖️</span> Your Achievements <span class="chip" id="achieveCount">0 unlocked</span></div>
                 <div class="achievement-grid" id="achievementGrid"></div>
             </div>
         </section>
 
         <!-- ============================================================
-        PAGE: REPORTS
+        PAGE: REPORTS — Enhanced & Well-Structured
         ============================================================ -->
         <section class="page" id="page-reports">
+            <!-- Summary Cards -->
+            <div class="grid-4" id="reportSummaryCards">
+                <div class="stat-card"><div class="number" id="repTotalTasks">0</div><div class="label">📋 Total Tasks</div></div>
+                <div class="stat-card"><div class="number" id="repTotalHabits">0</div><div class="label">🔄 Total Habits</div></div>
+                <div class="stat-card"><div class="number" id="repTotalStudy">0.0</div><div class="label">📚 Study Hours</div></div>
+                <div class="stat-card"><div class="number" id="repStreak">0</div><div class="label">🔥 Streak</div></div>
+            </div>
+
+            <!-- Detailed Report -->
             <div class="card">
-                <div class="card-title"><span class="icon">📄</span> Download Reports</div>
-                <p class="text-muted mb-16">Export your data in multiple formats</p>
-                <div class="report-buttons">
-                    <button class="pdf" id="reportPDF">📕 PDF</button>
-                    <button class="excel" id="reportExcel">📊 Excel</button>
-                    <button class="csv" id="reportCSV">📋 CSV</button>
-                    <button class="png" id="reportPNG">🖼 PNG</button>
+                <div class="card-title"><span class="icon">📊</span> Full Report <span class="chip">All data</span></div>
+                <div class="report-grid">
+                    <div class="report-item"><div class="label">Total Tasks</div><div class="value" id="repTasksTotal">0</div></div>
+                    <div class="report-item"><div class="label">Completed Tasks</div><div class="value" id="repTasksDone">0</div></div>
+                    <div class="report-item"><div class="label">Total Habits</div><div class="value" id="repHabitsTotal">0</div></div>
+                    <div class="report-item"><div class="label">Habits Done</div><div class="value" id="repHabitsDone">0</div></div>
+                    <div class="report-item"><div class="label">Study Hours</div><div class="value" id="repStudyTotal">0.0</div></div>
+                    <div class="report-item"><div class="label">Focus Sessions</div><div class="value" id="repFocusTotal">0</div></div>
+                    <div class="report-item"><div class="label">Mood Logs</div><div class="value" id="repMoodTotal">0</div></div>
+                    <div class="report-item"><div class="label">Team Members</div><div class="value" id="repTeamTotal">0</div></div>
+                    <div class="report-item"><div class="label">Challenges</div><div class="value" id="repChallengeTotal">0</div></div>
+                    <div class="report-item"><div class="label">Current Streak</div><div class="value" id="repStreakTotal">0</div></div>
                 </div>
             </div>
 
-            <div class="card mt-16" id="reportPreview">
-                <div class="card-title"><span class="icon">👁</span> Report Preview</div>
-                <div id="reportPreviewContent"
-                    style="background:rgba(12,10,10,0.5);backdrop-filter:blur(4px);border-radius:var(--radius-sm);padding:24px;border:1px solid var(--border-color);min-height:140px;">
-                    <div class="text-muted">Generating preview…</div>
+            <!-- Task History Table -->
+            <div class="card">
+                <div class="card-title"><span class="icon">📋</span> Task History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap">
+                    <table class="report-table" id="reportTaskTable">
+                        <thead><tr><th>Task</th><th>Status</th><th>Date</th><th>User</th></tr></thead>
+                        <tbody id="reportTaskBody">
+                            <tr><td colspan="4" class="text-muted text-center">No tasks yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Habit History Table -->
+            <div class="card">
+                <div class="card-title"><span class="icon">🔄</span> Habit History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap">
+                    <table class="report-table" id="reportHabitTable">
+                        <thead><tr><th>Habit</th><th>Status</th><th>Date</th><th>User</th></tr></thead>
+                        <tbody id="reportHabitBody">
+                            <tr><td colspan="4" class="text-muted text-center">No habits yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Study History Table -->
+            <div class="card">
+                <div class="card-title"><span class="icon">📚</span> Study History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap">
+                    <table class="report-table" id="reportStudyTable">
+                        <thead><tr><th>Subject</th><th>Hours</th><th>Date</th><th>User</th></tr></thead>
+                        <tbody id="reportStudyBody">
+                            <tr><td colspan="4" class="text-muted text-center">No study logs yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mood History Table -->
+            <div class="card">
+                <div class="card-title"><span class="icon">😊</span> Mood History <span class="chip">Recent</span></div>
+                <div class="report-table-wrap">
+                    <table class="report-table" id="reportMoodTable">
+                        <thead><tr><th>Mood</th><th>Date</th><th>User</th></tr></thead>
+                        <tbody id="reportMoodBody">
+                            <tr><td colspan="3" class="text-muted text-center">No mood logs yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Download & Reset -->
+            <div class="grid-2 mt-16">
+                <div class="card">
+                    <div class="card-title"><span class="icon">📄</span> Download Reports</div>
+                    <p class="text-muted mb-16">Export your data in multiple formats</p>
+                    <div class="report-buttons">
+                        <button class="pdf" id="reportPDF">📕 PDF</button>
+                        <button class="excel" id="reportExcel">📊 Excel</button>
+                        <button class="csv" id="reportCSV">📋 CSV</button>
+                        <button class="png" id="reportPNG">🖼 PNG</button>
+                    </div>
+                </div>
+
+                <div class="card" style="border-color:rgba(239,68,68,0.2);">
+                    <div class="card-title"><span class="icon">⚠️</span> Reset All Data</div>
+                    <p class="text-muted mb-16">This will permanently delete <strong>all</strong> tasks, habits, study logs, challenges, moods, focus sessions, and achievements.</p>
+                    <button id="resetAllBtn" style="padding:12px 32px;background:var(--danger);border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition);box-shadow:0 4px 20px rgba(239,68,68,0.25);font-family:'Inter',sans-serif;">🗑️ Reset Everything</button>
+                    <div class="text-muted text-sm mt-8">Requires password: <span class="font-mono" style="color:var(--accent-2);">ls1825235</span></div>
                 </div>
             </div>
         </section>
@@ -1741,14 +1922,32 @@
     <div class="toast" id="toast"></div>
 
     <!-- ============================================================
+    RESET MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal-box">
+            <h3>⚠️ Reset All Data</h3>
+            <p>Enter the password to confirm. This action <strong>cannot</strong> be undone.</p>
+            <div class="input-group">
+                <input type="password" id="resetPasswordInput" placeholder="Enter password..." />
+                <div class="modal-actions">
+                    <button class="btn-cancel" id="resetModalCancel">Cancel</button>
+                    <button class="btn-reset" id="resetModalConfirm">Confirm Reset</button>
+                </div>
+                <div id="resetError" class="text-danger text-sm hidden">Incorrect password. Try again.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
     JAVASCRIPT — FULL APPLICATION
     ============================================================ -->
     <script>
-        (function () {
+        (function() {
             'use strict';
 
             // ============================================================
-            // FIREBASE CONFIG — (user provided)
+            // FIREBASE CONFIG
             // ============================================================
             const firebaseConfig = {
                 apiKey: "AIzaSyDd0pVplYKRTtsd0wt21Y83_gajtonBLXE",
@@ -1761,13 +1960,15 @@
             };
 
             firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
             const db = firebase.database();
             const dataRef = db.ref('formula21');
 
             // ============================================================
             // STATE
             // ============================================================
-            const today = getToday();
+            let currentUser = null;
+            let currentNickname = '';
             let cachedData = {
                 tasks: [],
                 habits: [],
@@ -1779,7 +1980,9 @@
                 achievements: [],
                 settings: { streak: 0, lastDate: null }
             };
+            let isDataLoaded = false;
 
+            // Chart instances
             let dashChartInstance = null;
             let studyChartInstance = null;
             let analyticsTasksChart = null;
@@ -1787,21 +1990,21 @@
             let analyticsStudyChart = null;
             let analyticsMoodChart = null;
 
-            // Timer state
+            // Timer
             let timerInterval = null;
             let timerSeconds = 25 * 60;
             let timerRunning = false;
-            let timerMode = 'work'; // 'work' | 'break'
+            let timerMode = 'work';
 
             // ============================================================
             // HELPERS
             // ============================================================
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) document.querySelectorAll(s);
+
             function getToday() {
                 return new Date().toISOString().split('T')[0];
             }
-
-            const $ = (s) => document.querySelector(s);
-            const $$ = (s) => document.querySelectorAll(s);
 
             function showToast(msg, type = 'info') {
                 const el = $('#toast');
@@ -1812,10 +2015,149 @@
                 el._timeout = setTimeout(() => el.classList.remove('show'), 3200);
             }
 
+            function uid() {
+                return Date.now() + '' + Math.random().toString(36).substr(2, 4);
+            }
+
             // ============================================================
-            // FIREBASE SYNC
+            // AUTH
+            // ============================================================
+            const authOverlay = $('#authOverlay');
+            const googleBtn = $('#googleSignInBtn');
+            const nicknameSection = $('#nicknameSection');
+            const nicknameInput = $('#nicknameInput');
+            const saveNicknameBtn = $('#saveNicknameBtn');
+            const nicknameStatus = $('#nicknameStatus');
+            const userInfoSection = $('#userInfoSection');
+            const userAvatar = $('#userAvatar');
+            const userDisplayName = $('#userDisplayName');
+            const userEmail = $('#userEmail');
+            const userNicknameDisplay = $('#userNicknameDisplay');
+            const logoutBtn = $('#logoutBtn');
+            const sidebarNickname = $('#sidebarNickname');
+
+            // Check auth state
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    // Check if user has a nickname
+                    const userRef = db.ref('formula21/users/' + user.uid);
+                    userRef.once('value').then((snap) => {
+                        const data = snap.val();
+                        if (data && data.nickname) {
+                            currentNickname = data.nickname;
+                            showUserInfo(user, currentNickname);
+                            hideAuthOverlay();
+                            loadDataFromFirebase();
+                        } else {
+                            // Need nickname
+                            showUserInfo(user, '');
+                            showNicknameSetup();
+                        }
+                    });
+                } else {
+                    currentUser = null;
+                    currentNickname = '';
+                    showAuthOverlay();
+                    // Hide app content
+                    document.querySelector('.main-content').style.opacity = '0.3';
+                    document.querySelector('.sidebar').style.opacity = '0.3';
+                }
+            });
+
+            function showAuthOverlay() {
+                authOverlay.classList.remove('hidden');
+                nicknameSection.classList.add('hidden');
+                userInfoSection.classList.add('hidden');
+                document.querySelector('.main-content').style.opacity = '0.3';
+                document.querySelector('.sidebar').style.opacity = '0.3';
+            }
+
+            function hideAuthOverlay() {
+                authOverlay.classList.add('hidden');
+                document.querySelector('.main-content').style.opacity = '1';
+                document.querySelector('.sidebar').style.opacity = '1';
+            }
+
+            function showUserInfo(user, nickname) {
+                userInfoSection.classList.remove('hidden');
+                nicknameSection.classList.add('hidden');
+                userAvatar.textContent = (nickname || user.displayName || 'U')[0].toUpperCase();
+                userDisplayName.textContent = nickname || user.displayName || 'User';
+                userEmail.textContent = user.email || '';
+                if (nickname) {
+                    userNicknameDisplay.textContent = '👤 ' + nickname;
+                    sidebarNickname.textContent = nickname;
+                } else {
+                    userNicknameDisplay.textContent = '⚠️ Please set a nickname';
+                    sidebarNickname.textContent = 'Set nickname';
+                }
+            }
+
+            function showNicknameSetup() {
+                nicknameSection.classList.remove('hidden');
+                userInfoSection.classList.add('hidden');
+                nicknameInput.value = '';
+                nicknameStatus.textContent = 'Choose a nickname to continue';
+                nicknameInput.focus();
+            }
+
+            // Google Sign-In
+            googleBtn.addEventListener('click', () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider).catch((err) => {
+                    showToast('Sign-in error: ' + err.message, 'error');
+                });
+            });
+
+            // Save Nickname
+            saveNicknameBtn.addEventListener('click', () => {
+                const nick = nicknameInput.value.trim();
+                if (!nick) {
+                    nicknameStatus.textContent = '⚠️ Please enter a nickname';
+                    nicknameStatus.style.color = 'var(--danger)';
+                    return;
+                }
+                if (nick.length > 20) {
+                    nicknameStatus.textContent = '⚠️ Nickname must be 20 characters or less';
+                    nicknameStatus.style.color = 'var(--danger)';
+                    return;
+                }
+                if (currentUser) {
+                    const userRef = db.ref('formula21/users/' + currentUser.uid);
+                    userRef.set({
+                        email: currentUser.email,
+                        nickname: nick,
+                        joinedAt: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        currentNickname = nick;
+                        showUserInfo(currentUser, nick);
+                        hideAuthOverlay();
+                        loadDataFromFirebase();
+                        showToast('✅ Welcome ' + nick + '!', 'success');
+                    }).catch((err) => {
+                        nicknameStatus.textContent = '⚠️ ' + err.message;
+                        nicknameStatus.style.color = 'var(--danger)';
+                    });
+                }
+            });
+
+            nicknameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') saveNicknameBtn.click();
+            });
+
+            // Logout
+            logoutBtn.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    showToast('Signed out', 'info');
+                });
+            });
+
+            // ============================================================
+            // DATA LOAD
             // ============================================================
             function loadDataFromFirebase() {
+                if (!currentUser) return;
                 dataRef.on('value', (snapshot) => {
                     const val = snapshot.val();
                     if (val) {
@@ -1843,7 +2185,9 @@
                         };
                         dataRef.set(cachedData);
                     }
+                    // Check daily reset
                     checkDailyReset();
+                    // Update UI
                     updateAllUI();
                     const active = document.querySelector('.page.active');
                     if (active) {
@@ -1851,10 +2195,12 @@
                         showPage(id);
                     }
                     updateStreakAndDate();
+                    isDataLoaded = true;
                 });
             }
 
             function saveData() {
+                if (!currentUser) return;
                 dataRef.set(cachedData).catch(err => {
                     showToast('Save error: ' + err.message, 'error');
                 });
@@ -1891,15 +2237,14 @@
                 $('#dateDisplay').textContent = d;
                 const s = cachedData.settings.streak || 0;
                 $('#streakNumber').textContent = s;
-                $('#streakDisplay').innerHTML =
-                    `<span class="fire">🔥</span> ${s} day${s !== 1 ? 's' : ''}`;
+                $('#streakDisplay').innerHTML = '🔥 ' + s + ' day' + (s !== 1 ? 's' : '');
             }
 
             // ============================================================
             // NAVIGATION
             // ============================================================
             $$('.sidebar-nav a').forEach(link => {
-                link.addEventListener('click', function (e) {
+                link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const page = this.dataset.page;
                     showPage(page);
@@ -1944,12 +2289,11 @@
                     mood: 'Track your mental state',
                     focus: 'Deep work sessions',
                     achievements: 'Badges & rewards',
-                    reports: 'Export your data'
+                    reports: 'Detailed data export'
                 };
                 $('#pageTitle').textContent = titles[pageId] || pageId;
                 $('#pageSub').textContent = subs[pageId] || '';
 
-                // Render
                 if (pageId === 'dashboard') renderDashboard();
                 if (pageId === 'tasks') renderTasks();
                 if (pageId === 'habits') renderHabits();
@@ -1967,7 +2311,6 @@
 
             function updateAllUI() {
                 updateStreakAndDate();
-                // Re-render current page
                 const active = document.querySelector('.page.active');
                 if (active) {
                     const id = active.id.replace('page-', '');
@@ -1991,7 +2334,6 @@
                 $('#statStudy').textContent = totalStudy.toFixed(1);
                 $('#statStreak').textContent = cachedData.settings.streak || 0;
 
-                // Rings
                 const tPct = tasks.length === 0 ? 0 : Math.round((doneTasks.length / tasks.length) * 100);
                 const hPct = habits.length === 0 ? 0 : Math.round((doneHabits.length / habits.length) * 100);
                 const totalItems = tasks.length + habits.length;
@@ -2006,7 +2348,6 @@
                 $('#ringOverallVal').textContent = oPct + '%';
                 $('#dashPctLabel').textContent = oPct + '%';
 
-                // Today's tasks preview
                 const list = $('#dashTaskList');
                 const pending = tasks.filter(t => !t.done).length;
                 $('#dashTaskChip').textContent = pending + ' pending';
@@ -2016,25 +2357,23 @@
                     list.innerHTML = tasks.slice(0, 6).map(t => `
                         <div class="item-row">
                             <div class="info">
-                                <div class="checkbox ${t.done ? 'done' : ''}" data-task-id="${t.id}">${t.done ? '✓' : ''}</div>
-                                <span class="text ${t.done ? 'done-text' : ''}">${t.text}</span>
+                                <div class="checkbox ${t.done?'done':''}" data-task-id="${t.id}">${t.done?'✓':''}</div>
+                                <span class="text ${t.done?'done-text':''}">${t.text}</span>
+                                ${t.nickname ? `<span class="user-tag">by ${t.nickname}</span>` : ''}
                             </div>
                         </div>
                     `).join('');
                     list.querySelectorAll('.checkbox').forEach(el => {
-                        el.addEventListener('click', function () {
+                        el.addEventListener('click', function() {
                             const id = this.dataset.taskId;
                             const task = cachedData.tasks.find(t => t.id === id);
-                            if (task) {
-                                task.done = !task.done;
+                            if (task) { task.done = !task.done;
                                 saveData();
-                                renderDashboard();
-                            }
+                                renderDashboard(); }
                         });
                     });
                 }
 
-                // Chart
                 const ctx = document.getElementById('dashChart').getContext('2d');
                 if (dashChartInstance) dashChartInstance.destroy();
                 const weekData = getWeeklyCompletion();
@@ -2042,21 +2381,13 @@
                     type: 'bar',
                     data: {
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Completion %',
-                            data: weekData,
-                            backgroundColor: 'rgba(249,115,22,0.6)',
-                            borderColor: '#f97316',
-                            borderWidth: 2,
-                            borderRadius: 8
-                        }]
+                        datasets: [{ label: 'Completion %', data: weekData, backgroundColor: 'rgba(249,115,22,0.6)',
+                            borderColor: '#f97316', borderWidth: 2, borderRadius: 8 }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { labels: { color: '#d4c9c2' } }
-                        },
+                        plugins: { legend: { labels: { color: '#d4c9c2' } } },
                         scales: {
                             y: { min: 0, max: 100, ticks: { color: '#d4c9c2' }, grid: { color: 'rgba(255,255,255,0.04)' } },
                             x: { ticks: { color: '#d4c9c2' }, grid: { color: 'rgba(255,255,255,0.04)' } }
@@ -2105,30 +2436,29 @@
                 list.innerHTML = tasks.map(t => `
                     <div class="item-row">
                         <div class="info">
-                            <div class="checkbox ${t.done ? 'done' : ''}" data-task-id="${t.id}">${t.done ? '✓' : ''}</div>
-                            <span class="text ${t.done ? 'done-text' : ''}">${t.text}</span>
+                            <div class="checkbox ${t.done?'done':''}" data-task-id="${t.id}">${t.done?'✓':''}</div>
+                            <span class="text ${t.done?'done-text':''}">${t.text}</span>
+                            ${t.nickname ? `<span class="user-tag">${t.nickname}</span>` : ''}
                         </div>
                         <div class="meta">
-                            <span class="tag ${t.done ? 'done-tag' : ''}">${t.done ? '✅ Done' : '⏳ Pending'}</span>
-                            <button class="delete-btn" data-task-id="${t.id}">✕</button>
+                            <span class="tag ${t.done?'done-tag':''}">${t.done?'✅ Done':'⏳ Pending'}</span>
+                            ${t.userId === currentUser?.uid ? `<button class="delete-btn" data-task-id="${t.id}">✕</button>` : ''}
                         </div>
                     </div>
                 `).join('');
 
                 list.querySelectorAll('.checkbox').forEach(el => {
-                    el.addEventListener('click', function () {
+                    el.addEventListener('click', function() {
                         const id = this.dataset.taskId;
                         const task = cachedData.tasks.find(t => t.id === id);
-                        if (task) {
-                            task.done = !task.done;
+                        if (task) { task.done = !task.done;
                             saveData();
-                            renderTasks();
-                        }
+                            renderTasks(); }
                     });
                 });
 
                 list.querySelectorAll('.delete-btn').forEach(el => {
-                    el.addEventListener('click', function () {
+                    el.addEventListener('click', function() {
                         const id = this.dataset.taskId;
                         cachedData.tasks = cachedData.tasks.filter(t => t.id !== id);
                         saveData();
@@ -2137,15 +2467,17 @@
                 });
             }
 
-            $('#addTaskBtn').addEventListener('click', function () {
+            $('#addTaskBtn').addEventListener('click', function() {
                 const input = $('#taskInput');
                 const text = input.value.trim();
                 if (!text) { showToast('Please enter a task', 'warning'); return; }
                 cachedData.tasks.push({
-                    id: Date.now() + '' + Math.random().toString(36).substr(2, 4),
+                    id: uid(),
                     text: text,
                     done: false,
-                    date: getToday()
+                    date: getToday(),
+                    userId: currentUser?.uid || 'guest',
+                    nickname: currentNickname || 'Guest'
                 });
                 input.value = '';
                 saveData();
@@ -2171,19 +2503,20 @@
                 list.innerHTML = habits.map(h => `
                     <div class="item-row">
                         <div class="info">
-                            <div class="checkbox ${h.done ? 'done' : ''}" data-habit-id="${h.id}">${h.done ? '✓' : ''}</div>
-                            <span class="text ${h.done ? 'done-text' : ''}">${h.text}</span>
+                            <div class="checkbox ${h.done?'done':''}" data-habit-id="${h.id}">${h.done?'✓':''}</div>
+                            <span class="text ${h.done?'done-text':''}">${h.text}</span>
+                            ${h.nickname ? `<span class="user-tag">${h.nickname}</span>` : ''}
                         </div>
                         <div class="meta">
-                            <span class="tag ${h.done ? 'done-tag' : ''}">${h.done ? '✅ Done' : '⏳ Pending'}</span>
-                            <span class="tag">🔥 ${h.streak || 0}d</span>
-                            <button class="delete-btn" data-habit-id="${h.id}">✕</button>
+                            <span class="tag ${h.done?'done-tag':''}">${h.done?'✅ Done':'⏳ Pending'}</span>
+                            <span class="tag">🔥 ${h.streak||0}d</span>
+                            ${h.userId === currentUser?.uid ? `<button class="delete-btn" data-habit-id="${h.id}">✕</button>` : ''}
                         </div>
                     </div>
                 `).join('');
 
                 list.querySelectorAll('.checkbox').forEach(el => {
-                    el.addEventListener('click', function () {
+                    el.addEventListener('click', function() {
                         const id = this.dataset.habitId;
                         const habit = cachedData.habits.find(h => h.id === id);
                         if (habit) {
@@ -2197,7 +2530,7 @@
                 });
 
                 list.querySelectorAll('.delete-btn').forEach(el => {
-                    el.addEventListener('click', function () {
+                    el.addEventListener('click', function() {
                         const id = this.dataset.habitId;
                         cachedData.habits = cachedData.habits.filter(h => h.id !== id);
                         saveData();
@@ -2206,16 +2539,18 @@
                 });
             }
 
-            $('#addHabitBtn').addEventListener('click', function () {
+            $('#addHabitBtn').addEventListener('click', function() {
                 const input = $('#habitInput');
                 const text = input.value.trim();
                 if (!text) { showToast('Please enter a habit', 'warning'); return; }
                 cachedData.habits.push({
-                    id: Date.now() + '' + Math.random().toString(36).substr(2, 4),
+                    id: uid(),
                     text: text,
                     done: false,
                     date: getToday(),
-                    streak: 0
+                    streak: 0,
+                    userId: currentUser?.uid || 'guest',
+                    nickname: currentNickname || 'Guest'
                 });
                 input.value = '';
                 saveData();
@@ -2239,7 +2574,7 @@
                     history.innerHTML = '<div class="text-muted" style="padding:16px;">No logs yet</div>';
                 } else {
                     history.innerHTML = allLogs.map(s =>
-                        `<div class="item-row"><span class="text">${s.subject || 'General'} — ${s.hours} hrs</span><span class="text-muted">${s.date}</span></div>`
+                        `<div class="item-row"><span class="text">${s.subject||'General'} — ${s.hours} hrs</span><span class="text-muted">${s.date}</span>${s.nickname ? `<span class="user-tag">${s.nickname}</span>` : ''}</div>`
                     ).join('');
                 }
 
@@ -2250,23 +2585,14 @@
                     type: 'line',
                     data: {
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Study (hrs)',
-                            data: weekStudy,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245,158,11,0.08)',
-                            fill: true,
-                            tension: 0.3,
-                            pointBackgroundColor: '#f59e0b',
-                            pointBorderColor: '#f59e0b'
-                        }]
+                        datasets: [{ label: 'Study (hrs)', data: weekStudy, borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245,158,11,0.08)', fill: true, tension: 0.3,
+                            pointBackgroundColor: '#f59e0b', pointBorderColor: '#f59e0b' }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: { labels: { color: '#d4c9c2' } }
-                        },
+                        plugins: { legend: { labels: { color: '#d4c9c2' } } },
                         scales: {
                             y: { ticks: { color: '#d4c9c2' }, grid: { color: 'rgba(255,255,255,0.04)' } },
                             x: { ticks: { color: '#d4c9c2' }, grid: { color: 'rgba(255,255,255,0.04)' } }
@@ -2289,15 +2615,17 @@
                 return days;
             }
 
-            $('#addStudyBtn').addEventListener('click', function () {
+            $('#addStudyBtn').addEventListener('click', function() {
                 const hours = parseFloat($('#studyHours').value);
                 const subject = $('#studySubject').value.trim() || 'General';
                 if (isNaN(hours) || hours <= 0) { showToast('Enter valid hours', 'warning'); return; }
                 cachedData.studyLogs.push({
-                    id: Date.now() + '' + Math.random().toString(36).substr(2, 4),
+                    id: uid(),
                     hours: hours,
                     subject: subject,
-                    date: getToday()
+                    date: getToday(),
+                    userId: currentUser?.uid || 'guest',
+                    nickname: currentNickname || 'Guest'
                 });
                 $('#studyHours').value = '';
                 $('#studySubject').value = '';
@@ -2307,7 +2635,7 @@
             });
 
             // ============================================================
-            // CHALLENGES
+            // CHALLENGES — with participants
             // ============================================================
             function renderChallenges() {
                 const container = $('#challengeList');
@@ -2315,7 +2643,7 @@
 
                 if (challenges.length === 0) {
                     container.innerHTML =
-                        '<div class="text-muted" style="padding:24px;text-align:center;">No challenges yet</div>';
+                        '<div class="text-muted" style="padding:24px;text-align:center;">No challenges yet — start one!</div>';
                     return;
                 }
 
@@ -2337,28 +2665,68 @@
 
                     const todayDone = c.days && c.days.some(d => d.day === currentDay && d.done);
 
+                    // Participants
+                    let participantsHtml = '';
+                    if (c.participants) {
+                        const names = Object.values(c.participants);
+                        participantsHtml = names.map(n =>
+                            `<span class="pill">👤 ${n}</span>`
+                        ).join('');
+                    } else {
+                        participantsHtml = '<span class="text-muted text-sm">No participants yet</span>';
+                    }
+
+                    const isParticipant = c.participants && c.participants[currentUser?.uid];
+
                     return `
                         <div class="challenge-card">
                             <div class="flex-between">
                                 <strong style="font-size:17px;">🏆 ${c.name}</strong>
-                                <span class="text-muted">Day ${Math.min(currentDay, 21)}/21</span>
+                                <span class="text-muted">Day ${Math.min(currentDay,21)}/21</span>
                             </div>
+                            <div class="text-sm text-muted">Created by: <strong style="color:var(--accent-1);">${c.createdByNickname || 'Unknown'}</strong></div>
                             <div class="days-grid">${daysHtml}</div>
                             <div class="flex mt-8">
-                                <button class="challenge-toggle" data-idx="${idx}" style="padding:8px 22px;background:${todayDone ? 'var(--success)' : 'var(--bg-card)'};border:1px solid var(--border-color);border-radius:var(--radius-sm);color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:var(--transition);">
-                                    ${todayDone ? '✅ Done today' : '☐ Mark today'}
-                                </button>
-                                <button class="challenge-delete" data-idx="${idx}" style="padding:8px 22px;background:var(--danger);border:none;border-radius:var(--radius-sm);color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:var(--transition);">✕ Delete</button>
+                                ${!isParticipant ? `<button class="challenge-join" data-idx="${idx}" style="padding:8px 22px;background:var(--accent-gradient);border:none;border-radius:var(--radius-sm);color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:var(--transition);">➕ Join Challenge</button>` : `
+                                    <button class="challenge-toggle" data-idx="${idx}" style="padding:8px 22px;background:${todayDone?'var(--success)':'var(--bg-card)'};border:1px solid var(--border-color);border-radius:var(--radius-sm);color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:var(--transition);">
+                                        ${todayDone?'✅ Done today':'☐ Mark today'}
+                                    </button>
+                                `}
+                                ${c.createdBy === currentUser?.uid ? `<button class="challenge-delete" data-idx="${idx}" style="padding:8px 22px;background:var(--danger);border:none;border-radius:var(--radius-sm);color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:var(--transition);">✕ Delete</button>` : ''}
+                            </div>
+                            <div class="participants">
+                                <span class="text-sm text-muted" style="margin-right:6px;">👥 Participants:</span>
+                                ${participantsHtml}
                             </div>
                         </div>
                     `;
                 }).join('');
 
-                container.querySelectorAll('.challenge-toggle').forEach(btn => {
-                    btn.addEventListener('click', function () {
+                // Join challenge
+                container.querySelectorAll('.challenge-join').forEach(btn => {
+                    btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
                         const challenge = cachedData.challenges[idx];
                         if (!challenge) return;
+                        if (!currentUser) { showToast('Please sign in first', 'warning'); return; }
+                        if (!challenge.participants) challenge.participants = {};
+                        challenge.participants[currentUser.uid] = currentNickname || 'User';
+                        saveData();
+                        renderChallenges();
+                        showToast('✅ You joined the challenge!', 'success');
+                    });
+                });
+
+                // Toggle day
+                container.querySelectorAll('.challenge-toggle').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.idx);
+                        const challenge = cachedData.challenges[idx];
+                        if (!challenge) return;
+                        if (!challenge.participants || !challenge.participants[currentUser?.uid]) {
+                            showToast('Please join the challenge first', 'warning');
+                            return;
+                        }
                         const start = new Date(challenge.startDate);
                         const now = new Date();
                         const dayDiff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
@@ -2368,9 +2736,18 @@
                             return;
                         }
                         if (!challenge.days) challenge.days = [];
-                        const existing = challenge.days.find(d => d.day === currentDay);
-                        if (existing) existing.done = !existing.done;
-                        else challenge.days.push({ day: currentDay, done: true });
+                        const existing = challenge.days.find(d => d.day === currentDay && d.userId === currentUser
+                            ?.uid);
+                        if (existing) {
+                            existing.done = !existing.done;
+                        } else {
+                            challenge.days.push({
+                                day: currentDay,
+                                done: true,
+                                userId: currentUser?.uid,
+                                nickname: currentNickname || 'User'
+                            });
+                        }
                         saveData();
                         renderChallenges();
                         showToast('✅ Challenge updated!', 'success');
@@ -2378,7 +2755,7 @@
                 });
 
                 container.querySelectorAll('.challenge-delete').forEach(btn => {
-                    btn.addEventListener('click', function () {
+                    btn.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.idx);
                         if (confirm('Delete this challenge?')) {
                             cachedData.challenges.splice(idx, 1);
@@ -2390,15 +2767,19 @@
                 });
             }
 
-            $('#addChallengeBtn').addEventListener('click', function () {
+            $('#addChallengeBtn').addEventListener('click', function() {
                 const input = $('#challengeInput');
                 const name = input.value.trim();
                 if (!name) { showToast('Enter a challenge name', 'warning'); return; }
+                if (!currentUser) { showToast('Please sign in first', 'warning'); return; }
                 cachedData.challenges.push({
-                    id: Date.now() + '' + Math.random().toString(36).substr(2, 4),
+                    id: uid(),
                     name: name,
                     startDate: getToday(),
-                    days: []
+                    days: [],
+                    createdBy: currentUser.uid,
+                    createdByNickname: currentNickname || 'User',
+                    participants: {}
                 });
                 input.value = '';
                 saveData();
@@ -2415,7 +2796,7 @@
                 if (members.length === 0) {
                     list.innerHTML = '<div class="text-muted" style="padding:16px;">No members yet</div>';
                     $('#teamProgressDisplay').innerHTML =
-                        '<div class="text-muted" style="padding:28px;">Add members to see progress</div>';
+                    '<div class="text-muted" style="padding:28px;">Add members to see progress</div>';
                     return;
                 }
 
@@ -2423,14 +2804,14 @@
                     <div class="item-row">
                         <span class="text">👤 ${m.name}</span>
                         <div class="meta">
-                            <span class="tag">⭐ ${m.score || 0} pts</span>
-                            <button class="delete-btn" data-team-idx="${idx}">✕</button>
+                            <span class="tag">⭐ ${m.score||0} pts</span>
+                            ${m.userId === currentUser?.uid ? `<button class="delete-btn" data-team-idx="${idx}">✕</button>` : ''}
                         </div>
                     </div>
                 `).join('');
 
                 list.querySelectorAll('.delete-btn').forEach(el => {
-                    el.addEventListener('click', function () {
+                    el.addEventListener('click', function() {
                         const idx = parseInt(this.dataset.teamIdx);
                         cachedData.team.splice(idx, 1);
                         saveData();
@@ -2441,25 +2822,27 @@
                 const total = members.reduce((s, m) => s + (m.score || 0), 0);
                 const avg = members.length > 0 ? Math.round(total / members.length) : 0;
                 const top = members.length > 0 ? members.reduce((a, b) => (a.score || 0) > (b.score || 0) ? a : b) :
-                    null;
+                null;
 
                 $('#teamProgressDisplay').innerHTML = `
                     <div class="grid-3" style="margin-top:4px;">
                         <div class="stat-card"><div class="number">${total}</div><div class="label">Total Points</div></div>
                         <div class="stat-card"><div class="number">${avg}</div><div class="label">Average</div></div>
-                        <div class="stat-card"><div class="number">${top ? '👑 ' + top.name : '-'}</div><div class="label">Top Performer</div></div>
+                        <div class="stat-card"><div class="number">${top ? '👑 '+top.name : '-'}</div><div class="label">Top Performer</div></div>
                     </div>
                 `;
             }
 
-            $('#addTeamBtn').addEventListener('click', function () {
+            $('#addTeamBtn').addEventListener('click', function() {
                 const input = $('#teamInput');
                 const name = input.value.trim();
                 if (!name) { showToast('Enter a name', 'warning'); return; }
                 if (cachedData.team.length >= 5) { showToast('Maximum 5 members', 'warning'); return; }
                 cachedData.team.push({
-                    id: Date.now() + '' + Math.random().toString(36).substr(2, 4), name: name,
-                    score: 0
+                    id: uid(),
+                    name: name,
+                    score: 0,
+                    userId: currentUser?.uid || 'guest'
                 });
                 input.value = '';
                 saveData();
@@ -2471,7 +2854,6 @@
             // ANALYTICS
             // ============================================================
             function renderAnalytics() {
-                // Tasks chart
                 const ctx1 = document.getElementById('analyticsTasksChart').getContext('2d');
                 if (analyticsTasksChart) analyticsTasksChart.destroy();
                 const taskData = getWeeklyCompletion();
@@ -2479,10 +2861,8 @@
                     type: 'bar',
                     data: {
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Tasks %', data: taskData, backgroundColor: 'rgba(249,115,22,0.6)',
-                            borderColor: '#f97316', borderWidth: 2, borderRadius: 8
-                        }]
+                        datasets: [{ label: 'Tasks %', data: taskData, backgroundColor: 'rgba(249,115,22,0.6)',
+                            borderColor: '#f97316', borderWidth: 2, borderRadius: 8 }]
                     },
                     options: {
                         responsive: true,
@@ -2495,7 +2875,6 @@
                     }
                 });
 
-                // Habits chart
                 const ctx2 = document.getElementById('analyticsHabitsChart').getContext('2d');
                 if (analyticsHabitsChart) analyticsHabitsChart.destroy();
                 const habitData = getWeeklyHabitCompletion();
@@ -2503,10 +2882,8 @@
                     type: 'bar',
                     data: {
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        datasets: [{
-                            label: 'Habits %', data: habitData, backgroundColor: 'rgba(245,158,11,0.6)',
-                            borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8
-                        }]
+                        datasets: [{ label: 'Habits %', data: habitData, backgroundColor: 'rgba(245,158,11,0.6)',
+                            borderColor: '#f59e0b', borderWidth: 2, borderRadius: 8 }]
                     },
                     options: {
                         responsive: true,
@@ -2519,7 +2896,6 @@
                     }
                 });
 
-                // Study chart
                 const ctx3 = document.getElementById('analyticsStudyChart').getContext('2d');
                 if (analyticsStudyChart) analyticsStudyChart.destroy();
                 const studyData = getMonthlyStudy();
@@ -2527,11 +2903,9 @@
                     type: 'line',
                     data: {
                         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                        datasets: [{
-                            label: 'Study (hrs)', data: studyData, borderColor: '#fb923c',
+                        datasets: [{ label: 'Study (hrs)', data: studyData, borderColor: '#fb923c',
                             backgroundColor: 'rgba(251,146,60,0.08)', fill: true, tension: 0.3,
-                            pointBackgroundColor: '#fb923c'
-                        }]
+                            pointBackgroundColor: '#fb923c' }]
                     },
                     options: {
                         responsive: true,
@@ -2544,7 +2918,6 @@
                     }
                 });
 
-                // Mood chart
                 const ctx4 = document.getElementById('analyticsMoodChart').getContext('2d');
                 if (analyticsMoodChart) analyticsMoodChart.destroy();
                 const moodData = getMoodDistribution();
@@ -2552,11 +2925,9 @@
                     type: 'doughnut',
                     data: {
                         labels: ['😄 Excellent', '🙂 Good', '😐 Neutral', '😔 Bad', '😢 Awful'],
-                        datasets: [{
-                            data: moodData, backgroundColor: ['#22c55e', '#84cc16', '#f59e0b', '#f97316',
+                        datasets: [{ data: moodData, backgroundColor: ['#22c55e', '#84cc16', '#f59e0b', '#f97316',
                                 '#ef4444'
-                            ], borderColor: '#161111', borderWidth: 3
-                        }]
+                            ], borderColor: '#161111', borderWidth: 3 }]
                     },
                     options: {
                         responsive: true,
@@ -2614,23 +2985,35 @@
                 const selfScore = cachedData.tasks.filter(t => t.done).length +
                     cachedData.habits.filter(h => h.done).length +
                     cachedData.studyLogs.reduce((s, l) => s + parseFloat(l.hours || 0), 0) * 2;
-                users.push({ name: 'Me', score: Math.round(selfScore), isSelf: true });
+                users.push({ name: currentNickname || 'Me', score: Math.round(selfScore), isSelf: true, uid: currentUser
+                        ?.uid });
 
                 for (let m of cachedData.team) {
                     const base = Math.floor(Math.random() * 30) + 5;
-                    users.push({ name: m.name, score: (m.score || 0) + base, isSelf: false });
+                    users.push({ name: m.name, score: (m.score || 0) + base, isSelf: false, uid: m.userId });
                 }
 
-                users.sort((a, b) => b.score - a.score);
+                // Deduplicate by name
+                const unique = [];
+                const seen = new Set();
+                for (let u of users) {
+                    const key = u.name;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        unique.push(u);
+                    }
+                }
 
-                if (users.length === 0 || (users.length === 1 && users[0].score === 0)) {
+                unique.sort((a, b) => b.score - a.score);
+
+                if (unique.length === 0 || (unique.length === 1 && unique[0].score === 0)) {
                     list.innerHTML = '<div class="text-muted" style="padding:16px;">No data yet</div>';
                     return;
                 }
 
-                list.innerHTML = users.map((u, idx) => `
+                list.innerHTML = unique.map((u, idx) => `
                     <div class="leaderboard-item ${u.isSelf ? 'self' : ''}">
-                        <span class="rank">#${idx + 1}</span>
+                        <span class="rank">#${idx+1}</span>
                         <span class="name">${u.isSelf ? '⭐ ' : ''} ${u.name}</span>
                         <span class="score">${u.score} pts</span>
                         ${idx === 0 ? '<span class="badge-icon">👑</span>' : ''}
@@ -2669,7 +3052,7 @@
                 if (advice.length === 0) advice.push('✨ You\'re doing great! Keep pushing forward.');
 
                 const lastMood = cachedData.moodLogs.length > 0 ? cachedData.moodLogs[cachedData.moodLogs.length - 1] :
-                    null;
+                null;
                 if (lastMood) {
                     if (lastMood.mood === '😢' || lastMood.mood === '😔') advice.push(
                         '💙 You\'re feeling down. Take a break, go for a walk, and be kind to yourself.');
@@ -2680,7 +3063,7 @@
                 output.innerHTML = advice.map(a => `<div style="padding:6px 0;">${a}</div>`).join('');
             }
 
-            $('#coachRefreshBtn').addEventListener('click', function () {
+            $('#coachRefreshBtn').addEventListener('click', function() {
                 renderCoach();
                 showToast('🤖 New insights loaded!', 'success');
             });
@@ -2690,11 +3073,11 @@
             // ============================================================
             function renderMood() {
                 const today = getToday();
-                const todayLog = cachedData.moodLogs.find(l => l.date === today);
+                const todayLog = cachedData.moodLogs.find(l => l.date === today && l.userId === currentUser?.uid);
                 if (todayLog) {
                     $('#moodTodayDisplay').textContent = 'Today\'s mood: ' + todayLog.mood;
                     $$('.mood-options button').forEach(b => b.classList.toggle('selected', b.dataset.mood === todayLog
-                        .mood));
+                    .mood));
                 } else {
                     $('#moodTodayDisplay').textContent = 'Today\'s mood: not selected';
                     $$('.mood-options button').forEach(b => b.classList.remove('selected'));
@@ -2706,20 +3089,25 @@
                     history.innerHTML = '<div class="text-muted" style="padding:16px;">No data yet</div>';
                 } else {
                     history.innerHTML = logs.map(l =>
-                        `<div class="item-row"><span>${l.mood} — ${l.date}</span><span class="text-muted">${l.note || ''}</span></div>`
+                        `<div class="item-row"><span>${l.mood} — ${l.date}</span><span class="text-muted">${l.nickname||''}</span></div>`
                     ).join('');
                 }
             }
 
             $$('.mood-options button').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const mood = this.dataset.mood;
                     const today = getToday();
-                    const existing = cachedData.moodLogs.findIndex(l => l.date === today);
+                    if (!currentUser) { showToast('Please sign in', 'warning'); return; }
+                    const existing = cachedData.moodLogs.findIndex(l => l.date === today && l.userId ===
+                        currentUser.uid);
                     if (existing >= 0) cachedData.moodLogs[existing].mood = mood;
                     else cachedData.moodLogs.push({
-                        id: Date.now() + '' + Math.random().toString(36).substr(2,
-                            4), mood, date: today, note: ''
+                        id: uid(),
+                        mood,
+                        date: today,
+                        userId: currentUser.uid,
+                        nickname: currentNickname || 'User'
                     });
                     saveData();
                     renderMood();
@@ -2728,7 +3116,7 @@
             });
 
             // ============================================================
-            // FOCUS (Pomodoro)
+            // FOCUS
             // ============================================================
             function renderFocus() {
                 const history = $('#focusHistory');
@@ -2737,18 +3125,20 @@
                     history.innerHTML = '<div class="text-muted" style="padding:16px;">No sessions yet</div>';
                 } else {
                     history.innerHTML = sessions.slice(-10).reverse().map(s =>
-                        `<div class="item-row"><span>⏱ ${Math.round(s.duration / 60)} min</span><span class="text-muted">${s.date}</span></div>`
+                        `<div class="item-row"><span>⏱ ${Math.round(s.duration/60)} min</span><span class="text-muted">${s.date}</span>${s.nickname ? `<span class="user-tag">${s.nickname}</span>` : ''}</div>`
                     ).join('');
                 }
-                const todaySessions = cachedData.focusSessions.filter(s => s.date === getToday());
-                $('#focusSessionCount').textContent = `Today: ${todaySessions.length} session${todaySessions.length !== 1 ? 's' : ''}`;
+                const todaySessions = cachedData.focusSessions.filter(s => s.date === getToday() && s.userId ===
+                    currentUser?.uid);
+                $('#focusSessionCount').textContent = 'Today: ' + todaySessions.length + ' session' + (todaySessions
+                    .length !== 1 ? 's' : '');
             }
 
             function updateTimerDisplay() {
                 const mins = Math.floor(timerSeconds / 60);
                 const secs = timerSeconds % 60;
                 $('#timerDisplay').textContent =
-                    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
             }
 
             function startTimer() {
@@ -2763,13 +3153,17 @@
                         timerRunning = false;
                         $('#timerStartBtn').textContent = '▶ Start';
                         const duration = timerMode === 'work' ? 25 * 60 : 5 * 60;
-                        cachedData.focusSessions.push({
-                            id: Date.now() + '' + Math.random().toString(36).substr(2, 4),
-                            date: getToday(),
-                            duration: duration
-                        });
-                        saveData();
-                        renderFocus();
+                        if (currentUser) {
+                            cachedData.focusSessions.push({
+                                id: uid(),
+                                date: getToday(),
+                                duration: duration,
+                                userId: currentUser.uid,
+                                nickname: currentNickname || 'User'
+                            });
+                            saveData();
+                            renderFocus();
+                        }
                         if (timerMode === 'work') {
                             showToast('🎯 Work session done! Take a 5 min break.', 'success');
                             timerMode = 'break';
@@ -2832,16 +3226,17 @@
                 const streak = cachedData.settings.streak || 0;
                 const challengeDone = cachedData.challenges.filter(c => {
                     const days = c.days || [];
-                    return days.filter(d => d.done).length >= 21;
+                    const userDays = days.filter(d => d.userId === currentUser?.uid && d.done);
+                    return userDays.length >= 21;
                 }).length;
-                const focusSessions = cachedData.focusSessions.length;
+                const focusSessions = cachedData.focusSessions.filter(s => s.userId === currentUser?.uid).length;
                 const teamSize = cachedData.team.length;
 
                 const checks = {
                     first_task: doneTasks >= 1,
                     task_master: doneTasks >= 10,
                     habit_starter: doneHabits >= 1,
-                    habit_hero: cachedData.habits.some(h => (h.streak || 0) >= 7),
+                    habit_hero: cachedData.habits.some(h => h.userId === currentUser?.uid && (h.streak || 0) >= 7),
                     study_buddy: totalStudy >= 5,
                     study_warrior: totalStudy >= 20,
                     streak_7: streak >= 7,
@@ -2857,17 +3252,22 @@
                 };
 
                 for (let def of defs) {
-                    const existing = cachedData.achievements.find(a => a.id === def.id);
+                    const existing = cachedData.achievements.find(a => a.id === def.id && a.userId === currentUser
+                        ?.uid);
                     const unlocked = checks[def.id] || false;
                     if (existing) existing.unlocked = unlocked;
                     else cachedData.achievements.push({
-                        id: def.id, name: def.title, emoji: def.emoji, desc: def
-                            .desc, unlocked
+                        id: def.id,
+                        name: def.title,
+                        emoji: def.emoji,
+                        desc: def.desc,
+                        unlocked,
+                        userId: currentUser?.uid || 'guest'
                     });
                 }
                 saveData();
 
-                const all = cachedData.achievements;
+                const all = cachedData.achievements.filter(a => a.userId === currentUser?.uid);
                 const unlockedCount = all.filter(a => a.unlocked).length;
                 $('#achieveCount').textContent = unlockedCount + ' unlocked';
 
@@ -2876,30 +3276,78 @@
                         <div class="emoji">${a.emoji}</div>
                         <div class="title">${a.name}</div>
                         <div class="desc">${a.desc}</div>
-                        ${a.unlocked ? '<span style="color:var(--success);font-size:12px;">✅ Unlocked</span>' : '<span class="lock-icon">🔒 Locked</span>'}
+                        ${a.unlocked ? '<span style="color:var(--success);font-size:12px;">✅ Unlocked</span>' : '<span style="color:var(--text-muted);font-size:12px;">🔒 Locked</span>'}
                     </div>
                 `).join('');
             }
 
             // ============================================================
-            // REPORTS
+            // REPORTS — Enhanced
             // ============================================================
             function renderReports() {
-                const preview = $('#reportPreviewContent');
                 const d = getReportData();
-                preview.innerHTML = `
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:15px;">
-                        <div><strong>📋 Total Tasks:</strong> ${d.tasks.length} (done: ${d.tasks.filter(t => t.done).length})</div>
-                        <div><strong>🔄 Total Habits:</strong> ${d.habits.length} (done: ${d.habits.filter(h => h.done).length})</div>
-                        <div><strong>📚 Total Study:</strong> ${d.studyTotal.toFixed(1)} hrs</div>
-                        <div><strong>🔥 Streak:</strong> ${d.streak} days</div>
-                        <div><strong>😊 Mood Logs:</strong> ${d.moodLogs.length}</div>
-                        <div><strong>🎯 Focus Sessions:</strong> ${d.focusSessions.length}</div>
-                        <div><strong>🏆 Challenges:</strong> ${d.challenges.length}</div>
-                        <div><strong>👥 Team:</strong> ${d.team.length} members</div>
-                    </div>
-                    <div class="text-muted mt-16" style="font-size:14px;">📅 Last updated: ${d.date}</div>
-                `;
+
+                // Summary cards
+                $('#repTotalTasks').textContent = d.tasks.length;
+                $('#repTotalHabits').textContent = d.habits.length;
+                $('#repTotalStudy').textContent = d.studyTotal.toFixed(1);
+                $('#repStreak').textContent = d.streak;
+
+                // Detailed grid
+                $('#repTasksTotal').textContent = d.tasks.length;
+                $('#repTasksDone').textContent = d.tasks.filter(t => t.done).length;
+                $('#repHabitsTotal').textContent = d.habits.length;
+                $('#repHabitsDone').textContent = d.habits.filter(h => h.done).length;
+                $('#repStudyTotal').textContent = d.studyTotal.toFixed(1);
+                $('#repFocusTotal').textContent = d.focusSessions.length;
+                $('#repMoodTotal').textContent = d.moodLogs.length;
+                $('#repTeamTotal').textContent = d.team.length;
+                $('#repChallengeTotal').textContent = d.challenges.length;
+                $('#repStreakTotal').textContent = d.streak;
+
+                // Task table
+                const taskBody = $('#reportTaskBody');
+                const recentTasks = [...d.tasks].reverse().slice(0, 20);
+                if (recentTasks.length === 0) {
+                    taskBody.innerHTML = '<tr><td colspan="4" class="text-muted text-center">No tasks yet</td></tr>';
+                } else {
+                    taskBody.innerHTML = recentTasks.map(t =>
+                        `<tr><td>${t.text}</td><td>${t.done ? '✅ Done' : '⏳ Pending'}</td><td>${t.date}</td><td>${t.nickname || '—'}</td></tr>`
+                    ).join('');
+                }
+
+                // Habit table
+                const habitBody = $('#reportHabitBody');
+                const recentHabits = [...d.habits].reverse().slice(0, 20);
+                if (recentHabits.length === 0) {
+                    habitBody.innerHTML = '<tr><td colspan="4" class="text-muted text-center">No habits yet</td></tr>';
+                } else {
+                    habitBody.innerHTML = recentHabits.map(h =>
+                        `<tr><td>${h.text}</td><td>${h.done ? '✅ Done' : '⏳ Pending'}</td><td>${h.date}</td><td>${h.nickname || '—'}</td></tr>`
+                    ).join('');
+                }
+
+                // Study table
+                const studyBody = $('#reportStudyBody');
+                const recentStudy = [...d.studyLogs].reverse().slice(0, 20);
+                if (recentStudy.length === 0) {
+                    studyBody.innerHTML = '<tr><td colspan="4" class="text-muted text-center">No study logs yet</td></tr>';
+                } else {
+                    studyBody.innerHTML = recentStudy.map(s =>
+                        `<tr><td>${s.subject || 'General'}</td><td>${s.hours} hrs</td><td>${s.date}</td><td>${s.nickname || '—'}</td></tr>`
+                    ).join('');
+                }
+
+                // Mood table
+                const moodBody = $('#reportMoodBody');
+                const recentMood = [...d.moodLogs].reverse().slice(0, 20);
+                if (recentMood.length === 0) {
+                    moodBody.innerHTML = '<tr><td colspan="3" class="text-muted text-center">No mood logs yet</td></tr>';
+                } else {
+                    moodBody.innerHTML = recentMood.map(m =>
+                        `<tr><td>${m.mood}</td><td>${m.date}</td><td>${m.nickname || '—'}</td></tr>`
+                    ).join('');
+                }
             }
 
             function getReportData() {
@@ -2917,27 +3365,31 @@
                 };
             }
 
-            // Report download handlers
-            $('#reportPDF').addEventListener('click', function () {
+            // ============================================================
+            // REPORT DOWNLOADS
+            // ============================================================
+            $('#reportPDF').addEventListener('click', function() {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const d = getReportData();
                 doc.setFontSize(20);
                 doc.text('📊 Formula21 Report', 20, 30);
                 doc.setFontSize(12);
-                doc.text(`Date: ${d.date}`, 20, 45);
-                doc.text(`Total Tasks: ${d.tasks.length} (done: ${d.tasks.filter(t => t.done).length})`, 20, 55);
-                doc.text(`Total Habits: ${d.habits.length} (done: ${d.habits.filter(h => h.done).length})`, 20, 65);
-                doc.text(`Total Study: ${d.studyTotal.toFixed(1)} hrs`, 20, 75);
-                doc.text(`Streak: ${d.streak} days`, 20, 85);
-                doc.text(`Team: ${d.team.length} members`, 20, 95);
-                doc.text(`Mood Logs: ${d.moodLogs.length}`, 20, 105);
-                doc.text(`Focus Sessions: ${d.focusSessions.length}`, 20, 115);
+                doc.text('Date: ' + d.date, 20, 45);
+                doc.text('Total Tasks: ' + d.tasks.length + ' (done: ' + d.tasks.filter(t => t.done).length + ')', 20,
+                55);
+                doc.text('Total Habits: ' + d.habits.length + ' (done: ' + d.habits.filter(h => h.done).length + ')', 20,
+                65);
+                doc.text('Total Study: ' + d.studyTotal.toFixed(1) + ' hrs', 20, 75);
+                doc.text('Streak: ' + d.streak + ' days', 20, 85);
+                doc.text('Team: ' + d.team.length + ' members', 20, 95);
+                doc.text('Mood Logs: ' + d.moodLogs.length, 20, 105);
+                doc.text('Focus Sessions: ' + d.focusSessions.length, 20, 115);
                 doc.save('formula21_report.pdf');
                 showToast('📕 PDF downloaded!', 'success');
             });
 
-            $('#reportExcel').addEventListener('click', function () {
+            $('#reportExcel').addEventListener('click', function() {
                 const d = getReportData();
                 const wb = XLSX.utils.book_new();
                 const data = [
@@ -2960,7 +3412,7 @@
                 showToast('📊 Excel downloaded!', 'success');
             });
 
-            $('#reportCSV').addEventListener('click', function () {
+            $('#reportCSV').addEventListener('click', function() {
                 const d = getReportData();
                 const rows = [
                     ['Formula21 Report'],
@@ -2987,8 +3439,9 @@
                 showToast('📋 CSV downloaded!', 'success');
             });
 
-            $('#reportPNG').addEventListener('click', function () {
+            $('#reportPNG').addEventListener('click', function() {
                 const el = $('#reportPreviewContent');
+                if (!el) { showToast('Preview not ready', 'warning'); return; }
                 html2canvas(el).then(canvas => {
                     const link = document.createElement('a');
                     link.download = 'formula21_report.png';
@@ -2999,7 +3452,62 @@
             });
 
             // ============================================================
-            // SIDEBAR TOGGLE (Mobile)
+            // RESET ALL — Password protected
+            // ============================================================
+            const resetModal = $('#resetModal');
+            const resetPasswordInput = $('#resetPasswordInput');
+            const resetModalConfirm = $('#resetModalConfirm');
+            const resetModalCancel = $('#resetModalCancel');
+            const resetError = $('#resetError');
+            const RESET_PASSWORD = 'ls1825235';
+
+            $('#resetAllBtn').addEventListener('click', function() {
+                resetModal.classList.add('active');
+                resetPasswordInput.value = '';
+                resetError.classList.add('hidden');
+                resetPasswordInput.focus();
+            });
+
+            resetModalCancel.addEventListener('click', function() {
+                resetModal.classList.remove('active');
+            });
+
+            resetModal.addEventListener('click', function(e) {
+                if (e.target === this) resetModal.classList.remove('active');
+            });
+
+            resetModalConfirm.addEventListener('click', function() {
+                const pass = resetPasswordInput.value.trim();
+                if (pass === RESET_PASSWORD) {
+                    // Perform reset
+                    cachedData.tasks = [];
+                    cachedData.habits = [];
+                    cachedData.studyLogs = [];
+                    cachedData.challenges = [];
+                    cachedData.moodLogs = [];
+                    cachedData.focusSessions = [];
+                    cachedData.achievements = [];
+                    cachedData.team = [];
+                    cachedData.settings = { streak: 0, lastDate: getToday() };
+                    saveData();
+                    resetModal.classList.remove('active');
+                    showToast('🗑️ All data has been reset!', 'success');
+                    updateAllUI();
+                } else {
+                    resetError.classList.remove('hidden');
+                    resetError.textContent = '❌ Incorrect password. Try again.';
+                    resetPasswordInput.value = '';
+                    resetPasswordInput.focus();
+                }
+            });
+
+            resetPasswordInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') resetModalConfirm.click();
+                if (e.key === 'Escape') resetModal.classList.remove('active');
+            });
+
+            // ============================================================
+            // SIDEBAR TOGGLE
             // ============================================================
             const menuToggle = $('#menuToggle');
             const sidebar = $('#sidebar');
@@ -3023,17 +3531,14 @@
             // ============================================================
             // INIT
             // ============================================================
-            loadDataFromFirebase();
-
             // Auto‑save every 15s
-            setInterval(() => { saveData(); }, 15000);
-            window.addEventListener('beforeunload', () => saveData());
+            setInterval(() => { if (currentUser) saveData(); }, 15000);
+            window.addEventListener('beforeunload', () => { if (currentUser) saveData(); });
 
-            console.log('✦ Formula21 — Real‑time Productivity Suite loaded.');
-            console.log('🔥 Orange / Gold Theme · Power BI Style · Firebase Sync');
+            console.log('✦ Formula21 — Enhanced with Auth, Nicknames, Challenge Participants & Reset');
+            console.log('🔥 Orange / Gold Theme · Google Sign‑In · Real‑time Sync');
 
         })();
     </script>
 </body>
-
 </html>
